@@ -1,0 +1,419 @@
+/* ============================================================
+   D' VIAJE · Panel del conductor
+   Fichas grandes, poco texto y una sola acción por tarjeta:
+   está pensado para usarse desde el móvil, de pie y con prisa.
+   ============================================================ */
+
+.conductor {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--papel);
+}
+
+/* ----------------------------- Cabecera ---------------------------- */
+.cond-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  height: var(--topbar-h);
+  padding: 0 22px;
+  background: var(--vino);
+  color: #fff;
+  flex-shrink: 0;
+}
+.cond-marca { display: flex; align-items: center; gap: 11px; min-width: 0; }
+.cond-marca .brand-mark { background: rgba(255, 255, 255, 0.16); color: #fff; }
+.cond-marca .brand-name { color: #fff; }
+.cond-marca .brand-name small { color: var(--salmon); }
+
+.cond-topbar-derecha { display: flex; align-items: center; gap: 10px; }
+.cond-topbar-derecha .nav-historial { border-right-color: rgba(255, 255, 255, 0.22); }
+.cond-topbar-derecha .iconbtn { color: #f3dede; }
+.cond-topbar-derecha .iconbtn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+.cond-topbar-derecha .iconbtn:disabled { opacity: 0.4; }
+.cond-topbar-derecha .avatar { background: rgba(255, 255, 255, 0.18); color: #fff; }
+.cond-topbar-derecha .user-data strong { color: #fff; }
+.cond-topbar-derecha .user-data small { color: var(--salmon); }
+.cond-topbar-derecha .btn.ghost {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.24);
+  color: #fff;
+}
+.cond-topbar-derecha .btn.ghost:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.36);
+}
+
+/* ------------------------- Pestañas de sección --------------------- */
+.cond-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 22px;
+  background: var(--blanco);
+  border-bottom: 1px solid var(--linea);
+  overflow-x: auto;
+  flex-shrink: 0;
+}
+.cond-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px;
+  border: none;
+  border-bottom: 3px solid transparent;
+  background: none;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.cond-tab:hover { color: var(--tinta); }
+.cond-tab.activa { color: var(--rojo); border-bottom-color: var(--rojo); }
+.cond-badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--pill);
+  background: var(--rojo);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+/* ----------------------------- Contenido --------------------------- */
+.cond-contenido {
+  flex: 1;
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 24px 22px 44px;
+}
+.cond-seccion { display: flex; flex-direction: column; gap: 18px; }
+
+.cond-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.cond-titulo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--tinta);
+  letter-spacing: -0.01em;
+}
+.cond-sub { margin-top: 4px; color: var(--muted); font-size: 0.88rem; max-width: 62ch; }
+.cond-conteo { font-size: 0.84rem; color: var(--muted); }
+.cond-conteo strong { color: var(--tinta); font-size: 1rem; }
+.cond-selector { min-width: 250px; }
+
+.cond-filtros { display: flex; flex-direction: column; gap: 12px; }
+.cond-filtros .search { max-width: none; }
+
+.chips-filtro { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip-filtro {
+  padding: 7px 14px;
+  border: 1px solid var(--linea);
+  border-radius: var(--pill);
+  background: var(--blanco);
+  color: var(--texto);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.chip-filtro:hover { border-color: var(--salmon); }
+.chip-filtro.activo { background: var(--vino); border-color: var(--vino); color: #fff; }
+
+.cond-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+
+/* -------------------------- Ficha de servicio ---------------------- */
+.serv-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  background: var(--blanco);
+  border: 1px solid var(--linea);
+  border-radius: var(--r-md);
+  box-shadow: var(--sombra-1);
+}
+.serv-card.cargando { min-height: 190px; }
+
+.serv-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.serv-codigo {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--tinta);
+  letter-spacing: 0.01em;
+}
+
+.estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: var(--pill);
+  font-size: 0.76rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.estado::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.estado.programado { background: var(--ambar-suave); color: var(--ambar); }
+.estado.curso { background: #e7effc; color: #1d4ed8; }
+.estado.hecho { background: var(--verde-suave); color: #1d6b41; }
+.estado.cancelado { background: var(--rojo-suave); color: var(--error); }
+.estado.neutro { background: var(--fondo-input); color: var(--muted); }
+
+.serv-ruta {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: var(--papel);
+  border-radius: var(--r-sm);
+}
+.serv-ruta > svg { color: var(--rojo); }
+.serv-punto { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.serv-punto small {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted-2);
+  font-weight: 700;
+}
+.serv-punto strong { font-size: 0.95rem; color: var(--tinta); }
+.serv-punto span { font-size: 0.82rem; color: var(--muted); }
+
+.serv-datos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 14px;
+  margin: 0;
+}
+.serv-datos div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.serv-datos dt {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted-2);
+  font-weight: 700;
+}
+.serv-datos dd { margin: 0; font-size: 0.88rem; color: var(--tinta); font-weight: 600; }
+
+.serv-obs {
+  padding: 11px 14px;
+  border-left: 3px solid var(--salmon);
+  background: var(--rojo-suave);
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  font-size: 0.85rem;
+  color: var(--texto);
+}
+.serv-acciones { display: flex; justify-content: flex-end; }
+
+/* -------------------------- Ficha de vehículo ---------------------- */
+.veh-card {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 22px;
+  background: var(--blanco);
+  border: 1px solid var(--linea);
+  border-radius: var(--r-md);
+  box-shadow: var(--sombra-1);
+}
+.veh-card.cargando { min-height: 220px; }
+
+.veh-top { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.veh-icono {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--r-md);
+  background: var(--rojo-suave);
+  color: var(--vino);
+  flex-shrink: 0;
+}
+.veh-identidad { flex: 1; min-width: 0; }
+.veh-placa {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--tinta);
+  letter-spacing: 0.06em;
+}
+.veh-modelo { font-size: 0.88rem; color: var(--muted); }
+
+.veh-datos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  margin: 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--linea-2);
+}
+.veh-datos div { display: flex; flex-direction: column; gap: 2px; }
+.veh-datos dt {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted-2);
+  font-weight: 700;
+}
+.veh-datos dd { margin: 0; font-size: 0.9rem; color: var(--tinta); font-weight: 600; }
+.veh-acciones { display: flex; justify-content: flex-end; }
+
+.veh-columnas { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.veh-bloque {
+  padding: 18px;
+  background: var(--blanco);
+  border: 1px solid var(--linea);
+  border-radius: var(--r-md);
+  box-shadow: var(--sombra-1);
+}
+.veh-bloque-titulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--tinta);
+  margin-bottom: 12px;
+}
+.veh-bloque-titulo svg { color: var(--rojo); }
+.veh-vacio { font-size: 0.85rem; color: var(--muted); }
+.veh-items { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.veh-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--linea-2);
+}
+.veh-item:last-child { border-bottom: none; }
+.veh-item-titulo { font-size: 0.88rem; font-weight: 700; color: var(--tinta); }
+.veh-item-sub { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+.veh-costo { font-size: 0.85rem; font-weight: 700; color: var(--tinta); white-space: nowrap; }
+
+.vigencia {
+  padding: 4px 10px;
+  border-radius: var(--pill);
+  font-size: 0.74rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.vigencia.vigente { background: var(--verde-suave); color: #1d6b41; }
+.vigencia.pronto { background: var(--ambar-suave); color: var(--ambar); }
+.vigencia.vencido { background: var(--rojo-suave); color: var(--error); }
+.vigencia.neutro { background: var(--fondo-input); color: var(--muted); }
+
+/* ------------------------------ Alertas ---------------------------- */
+.alerta-card {
+  display: flex;
+  gap: 14px;
+  padding: 18px;
+  background: var(--blanco);
+  border: 1px solid var(--linea);
+  border-left: 4px solid var(--rojo);
+  border-radius: var(--r-md);
+  box-shadow: var(--sombra-1);
+}
+.alerta-card.cargando { min-height: 110px; }
+.alerta-card.resuelta { border-left-color: var(--verde); opacity: 0.72; }
+.alerta-icono {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--rojo-suave);
+  color: var(--vino);
+  flex-shrink: 0;
+}
+.alerta-card.resuelta .alerta-icono { background: var(--verde-suave); color: #1d6b41; }
+.alerta-cuerpo { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.alerta-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.alerta-tipo { font-size: 0.95rem; font-weight: 800; color: var(--tinta); }
+.alerta-texto { font-size: 0.88rem; color: var(--texto); }
+.alerta-pie { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.alerta-ref { font-size: 0.78rem; color: var(--muted); font-weight: 600; }
+
+.empty-ok {
+  display: grid;
+  place-items: center;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: var(--verde-suave);
+  color: #1d6b41;
+  margin-bottom: 4px;
+}
+
+/* ----------------- Diálogos con formulario del conductor ----------- */
+.modal.ancho {
+  max-width: 520px;
+  padding: 0;
+  text-align: left;
+}
+.modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 22px 14px;
+  border-bottom: 1px solid var(--linea);
+}
+.modal-eyebrow {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted-2);
+  font-weight: 800;
+  margin-bottom: 3px;
+}
+.modal.ancho .modal-title { text-align: left; }
+.modal-form { display: flex; flex-direction: column; gap: 16px; padding: 20px 22px; }
+.modal-form .modal-actions {
+  justify-content: flex-end;
+  margin-top: 4px;
+  padding-top: 16px;
+  border-top: 1px solid var(--linea);
+}
+
+.skeleton.alto { display: block; height: 100%; min-height: 90px; }
+
+/* ---------------------------- Responsive --------------------------- */
+@media (max-width: 860px) {
+  .veh-columnas { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 720px) {
+  .cond-topbar { padding: 0 14px; gap: 8px; }
+  .cond-marca .brand-name small { display: none; }
+  /* En el móvil solo se oculta el nombre: el avatar sigue a mano para cambiar la foto. */
+  .cond-topbar-derecha .user-data { display: none; }
+  .cond-tabs { padding: 0 8px; }
+  .cond-tab { padding: 13px 12px; font-size: 0.84rem; }
+  .cond-contenido { padding: 18px 14px 36px; }
+  .serv-ruta { grid-template-columns: 1fr; gap: 12px; }
+  .serv-ruta > svg { transform: rotate(90deg); justify-self: center; }
+  .serv-acciones .btn { width: 100%; justify-content: center; }
+}
