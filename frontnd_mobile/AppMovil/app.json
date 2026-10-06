@@ -1,0 +1,47 @@
+{
+  "expo": {
+    "name": "D' VIAJE",
+    "slug": "AppMovil",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#f5f6f9",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.transporte.appmovil"
+    },
+    "android": {
+      "package": "com.transporte.appmovil",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "backgroundColor": "#7a1113",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "allowBackup": false,
+      "usesCleartextTraffic": true,
+      "permissions": [
+        "android.permission.INTERNET",
+        "android.permission.CAMERA"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-asset",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "D' VIAJE usa tus fotos para que elijas tu foto de perfil.",
+          "cameraPermission": "D' VIAJE usa la cámara para que te tomes la foto de perfil.",
+          "microphonePermission": false
+        }
+      ],
+      "expo-secure-store"
+    ]
+  }
+}
