@@ -1,0 +1,103 @@
+/* ============================================================
+   D' VIAJE · Navegación
+   Flechas de historial, paso entre secciones y pantalla de
+   arranque. Lo usan los dos paneles (administrador y conductor).
+   ============================================================ */
+
+/* ------------------- Flechas Atrás / Adelante ------------------- */
+.nav-historial {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding-right: 6px;
+  margin-right: 2px;
+  border-right: 1px solid var(--linea);
+}
+.nav-flecha { color: var(--muted); }
+.nav-flecha:hover:not(:disabled) { color: var(--vino); background: var(--rojo-suave); }
+.nav-flecha:disabled { opacity: 0.32; cursor: not-allowed; }
+.nav-flecha:disabled:hover { background: none; color: var(--muted); }
+
+/* -------------- Sección anterior / siguiente (pie) -------------- */
+.paso-secciones {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 26px;
+}
+.paso {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border: 1px solid var(--linea);
+  border-radius: var(--r-md);
+  background: var(--blanco);
+  color: var(--texto);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+.paso:hover {
+  border-color: var(--salmon);
+  box-shadow: var(--sombra-2);
+  transform: translateY(-1px);
+}
+.paso.derecha { justify-content: flex-end; text-align: right; }
+.paso svg { color: var(--rojo); flex-shrink: 0; }
+
+.paso-texto { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.paso-texto small {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted-2);
+  font-weight: 700;
+}
+.paso-texto strong {
+  font-size: 0.92rem;
+  color: var(--tinta);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.paso-hueco { display: block; }
+
+/* ------------- Pantalla de arranque (comprobando sesión) -------- */
+.arranque {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: var(--papel);
+}
+.brand-mark.grande { width: 56px; height: 56px; font-size: 1.2rem; }
+.arranque-texto { color: var(--muted); font-size: 0.92rem; }
+.arranque-barra {
+  position: relative;
+  width: 190px;
+  height: 4px;
+  border-radius: var(--pill);
+  background: var(--linea);
+  overflow: hidden;
+}
+.arranque-barra::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  border-radius: var(--pill);
+  background: var(--rojo);
+  animation: correr 1.1s ease-in-out infinite;
+}
+@keyframes correr {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(250%); }
+}
+
+@media (max-width: 720px) {
+  .paso-secciones { grid-template-columns: 1fr; }
+  .paso.derecha { justify-content: flex-start; text-align: left; flex-direction: row-reverse; }
+}
