@@ -19,6 +19,9 @@
 //   unique     no puede repetirse en la tabla (se avisa antes de enviar)
 //   distinctFrom  nombre de otro campo con el que no puede coincidir
 //   soloEdicion   no aparece al crear (p. ej. la llegada real, que se conoce después)
+//   enmascarado   la API lo devuelve oculto ("••••6589"): al editar se conserva si no se cambia
+//   privado       la API no lo devuelve nunca: no sale en la tabla y al editar llega vacío
+//                 (si se deja vacío se conserva el valor guardado)
 //
 // Los campos numéricos solo dejan escribir números (sin letras ni la
 // "e" de notación científica): ver lib/validaciones.js.
@@ -137,12 +140,12 @@ export const entities = [
       { name: 'nombre', label: 'Nombre', type: 'text', required: true, format: 'nombre' },
       { name: 'apellido', label: 'Apellido', type: 'text', required: true, format: 'nombre' },
       { name: 'tipo_documento', label: 'Tipo de documento', type: 'select', required: true, options: ['CC', 'CE', 'TI', 'PA', 'NIT'] },
-      { name: 'numero_documento', label: 'Número de documento', type: 'text', required: true, format: 'documento', unique: true, hint: 'Solo números. El pasaporte admite letras.' },
+      { name: 'numero_documento', label: 'Número de documento', type: 'text', required: true, format: 'documento', unique: true, enmascarado: true, hint: 'Solo números. El pasaporte admite letras.' },
       { name: 'email', label: 'Email', type: 'email', required: true, unique: true },
       { name: 'telefono', label: 'Teléfono', type: 'text', required: true, format: 'telefono' },
-      { name: 'fecha_nacimiento', label: 'Fecha de nacimiento', type: 'date' },
-      { name: 'direccion', label: 'Dirección', type: 'text' },
-      { name: 'licencia_conduccion', label: 'Licencia de conducción', type: 'text' },
+      { name: 'fecha_nacimiento', label: 'Fecha de nacimiento', type: 'date', privado: true },
+      { name: 'direccion', label: 'Dirección', type: 'text', privado: true },
+      { name: 'licencia_conduccion', label: 'Licencia de conducción', type: 'text', enmascarado: true },
       { name: 'categoria_licencia', label: 'Categoría de licencia', type: 'select', options: ['A1', 'A2', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3'] },
       { name: 'fecha_expedicion_licencia', label: 'Expedición licencia', type: 'date' },
       { name: 'fecha_vencimiento_licencia', label: 'Vencimiento licencia', type: 'date', after: 'fecha_expedicion_licencia' },
@@ -162,11 +165,11 @@ export const entities = [
       { name: 'nombre', label: 'Nombre', type: 'text', required: true, format: 'nombre' },
       { name: 'apellido', label: 'Apellido', type: 'text', required: true, format: 'nombre' },
       { name: 'tipo_documento', label: 'Tipo de documento', type: 'select', required: true, options: ['CC', 'CE', 'TI', 'PA', 'NIT'] },
-      { name: 'numero_documento', label: 'Número de documento', type: 'text', required: true, format: 'documento', unique: true, hint: 'Solo números. El pasaporte admite letras.' },
+      { name: 'numero_documento', label: 'Número de documento', type: 'text', required: true, format: 'documento', unique: true, enmascarado: true, hint: 'Solo números. El pasaporte admite letras.' },
       { name: 'email', label: 'Email', type: 'email', required: true, unique: true },
       { name: 'telefono', label: 'Teléfono', type: 'text', format: 'telefono' },
-      { name: 'fecha_nacimiento', label: 'Fecha de nacimiento', type: 'date' },
-      { name: 'direccion', label: 'Dirección', type: 'text' }
+      { name: 'fecha_nacimiento', label: 'Fecha de nacimiento', type: 'date', privado: true },
+      { name: 'direccion', label: 'Dirección', type: 'text', privado: true }
     ]
   },
 

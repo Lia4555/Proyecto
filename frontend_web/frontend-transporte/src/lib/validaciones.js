@@ -121,3 +121,52 @@ export function limpiarSegunFormato(formato, valor, valores = {}) {
   if (formato === 'placa') return limpiarPlaca(valor)
   return valor
 }
+
+// ------------------------------------------------------------
+// Datos enmascarados (middleware/datosSensibles.js del backend)
+// ------------------------------------------------------------
+// La API nunca devuelve completos el documento ni la licencia: llegan
+// como "••••6589". Ese valor no es un dato que se pueda validar ni
+// reenviar: si el usuario no lo cambia, se deja tal cual y no se envía.
+export const MASCARA = '••••'
+
+export const esEnmascarado = (valor) => typeof valor === 'string' && valor.includes(MASCARA)
+
+// Al escribir sobre un valor enmascarado, lo escrito REEMPLAZA a la
+// máscara (no se mezcla con ella): "••••6589" + "1" -> "1".
+export function quitarMascara(nuevo, anterior) {
+  const texto = String(nuevo ?? '')
+  if (!esEnmascarado(anterior) || !texto.includes('•')) return texto
+  if (texto.startsWith(anterior)) return texto.slice(anterior.length)
+  if (texto.endsWith(anterior)) return texto.slice(0, texto.length - anterior.length)
+  return '' // se borró parte de la máscara: el campo queda vacío para escribir el número completo
+}
+
+// ------------------------------------------------------------
+// Contraseñas (mismas reglas que el backend: 8 a 72 caracteres)
+// ------------------------------------------------------------
+export const CLAVE_MIN = 8
+export const CLAVE_MAX = 72
+
+export function errorContrasena(texto) {
+  const valor = String(texto ?? '')
+  if (!valor) return 'Escribe la contraseña.'
+  if (valor.length < CLAVE_MIN) return `Debe tener al menos ${CLAVE_MIN} caracteres.`
+  if (valor.length > CLAVE_MAX) return `Admite como máximo ${CLAVE_MAX} caracteres.`
+  return null
+}
+
+// Pistas de fortaleza: se muestran mientras se escribe, sin bloquear.
+export function fortaleza(clave) {
+  if (!clave) return null
+  let puntos = 0
+  if (clave.length >= 8) puntos++
+  if (clave.length >= 12) puntos++
+  if (/[a-z]/.test(clave) && /[A-Z]/.test(clave)) puntos++
+  if (/\d/.test(clave)) puntos++
+  if (/[^A-Za-z0-9]/.test(clave)) puntos++
+  if (clave.length < CLAVE_MIN) return { nivel: 'debil', texto: `Muy corta: mínimo ${CLAVE_MIN} caracteres` }
+  if (puntos <= 2) return { nivel: 'debil', texto: 'Débil: combina mayúsculas, números o símbolos' }
+  if (puntos === 3) return { nivel: 'media', texto: 'Aceptable' }
+  return { nivel: 'fuerte', texto: 'Fuerte' }
+}

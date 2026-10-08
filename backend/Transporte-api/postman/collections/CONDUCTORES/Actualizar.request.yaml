@@ -1,0 +1,87 @@
+$kind: http-request
+description: |-
+  Actualiza el conductor indicado por su `id_conductor`. Es una **actualización parcial**: solo se envían los campos que se quieren cambiar.
+
+  ## Endpoint
+
+  `PUT {{baseUrl}}/conductor/:id`
+
+  Ejemplo: `PUT {{baseUrl}}/conductor/f38b2ffc-80a4-4f5a-91c9-bc701e7ea419`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **USUARIO › Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**. Además, en cada petición se comprueba que la cuenta siga activa: si un administrador la desactiva, el token deja de servir al momento (`401`).
+
+  Solo un usuario con rol **Administrador** puede usar este endpoint.
+
+  ## Parámetros de ruta
+
+  | Parámetro | Tipo | Requerido | Descripción |
+  | --- | --- | --- | --- |
+  | `id` | string (UUID) | Sí | `id_conductor` del registro a actualizar. |
+
+  ## Request Body
+
+  Cualquiera de estos campos (todos opcionales), con las mismas reglas que al crear. La clave `id_conductor` y los campos desconocidos se ignoran:
+
+  | Campo | Tipo | Descripción |
+  | --- | --- | --- |
+  | `nombre` | string | Solo letras y espacios, de 2 a 60 caracteres. |
+  | `apellido` | string | Solo letras y espacios, de 2 a 60 caracteres. |
+  | `tipo_documento` | string | `CC`, `CE`, `TI`, `NIT` (solo números) o `PA` (pasaporte). |
+  | `numero_documento` | string | De 5 a 15 dígitos (pasaporte: 5 a 20 letras o números). **Único**. |
+  | `email` | string (email) | Correo del conductor; debe ser el mismo de su cuenta para que pueda iniciar sesión. **Único**. |
+  | `telefono` | string | Entre 7 y 15 dígitos; admite espacios y un `+` inicial. |
+  | `fecha_nacimiento` | string (date) | Formato `YYYY-MM-DD`. |
+  | `direccion` | string | Dirección de residencia. |
+  | `licencia_conduccion` | string | Número de la licencia de conducción. |
+  | `categoria_licencia` | string | Categoría de la licencia (máximo 5 caracteres, ej. `C2`). |
+  | `fecha_expedicion_licencia` | string (date) | Formato `YYYY-MM-DD`. |
+  | `fecha_vencimiento_licencia` | string (date) | Formato `YYYY-MM-DD`. |
+  | `id_rol` | integer | ID del rol **Conductor** (ver **ROLES**; actualmente `7`). |
+
+  ## Datos delicados
+
+  Por protección de datos personales, la API **nunca devuelve completos** estos campos, tampoco al administrador:
+
+  - **No se devuelven:** `fecha_nacimiento`, `direccion` (ni `ultimo_acceso`).
+  - **Llegan enmascarados** (solo los últimos 4 caracteres, ej. `••••5678`): `numero_documento`, `licencia_conduccion`.
+
+  Al editar se pueden enviar con el valor completo para cambiarlos. Si se reenvía el valor enmascarado (`••••5678`, como hace el formulario cuando no se toca), **se ignora** y el dato real se conserva. Si un campo oculto no se envía, también se conserva.
+
+  ## Ejemplo de Request Body
+
+  ```json
+  {
+    "telefono": "3001234567",
+    "categoria_licencia": "C2",
+    "fecha_vencimiento_licencia": "2032-05-20"
+  }
+  ```
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `200 OK` | Registro actualizado. Devuelve `{ success, data }` con el registro completo. |
+  | `400 Bad Request` | No se envió ningún campo válido, o algún dato no cumple el formato (ver `detalles`). |
+  | `401 Unauthorized` | No se envió el token, o el token expiró (dura 8 horas). Vuelve a ejecutar el login. |
+  | `403 Forbidden` | El rol de la sesión no tiene permiso para esta operación. |
+  | `404 Not Found` | No existe un conductor con ese `id`. |
+  | `409 Conflict` | Ya existe otro registro con ese numero_documento o email. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+url: "{{baseUrl}}/conductor/f38b2ffc-80a4-4f5a-91c9-bc701e7ea419"
+method: PUT
+body:
+  type: json
+  content: |-
+    {
+      "telefono": "3001234567",
+      "categoria_licencia": "C2",
+      "fecha_vencimiento_licencia": "2032-05-20"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+order: 3000

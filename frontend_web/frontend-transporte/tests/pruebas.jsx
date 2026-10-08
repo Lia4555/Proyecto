@@ -1,4 +1,11 @@
-
+// ============================================================
+// Pruebas automáticas del frontend (sin dependencias extra).
+// Se ejecutan con:  npm test
+//
+// 1. Humo: cada pantalla se renderiza sin lanzar errores.
+// 2. Lógica: paginación, validaciones, formato, roles y que
+//    los códigos internos (ids) no aparezcan en pantalla.
+// ============================================================
 import { renderToString, renderToStaticMarkup } from 'react-dom/server'
 import App from '../src/App.jsx'
 import Dashboard, { SECCIONES_ADMIN } from '../src/components/Dashboard.jsx'
@@ -6,16 +13,18 @@ import Cuentas from '../src/components/Cuentas.jsx'
 import Landing from '../src/components/Landing.jsx'
 import Login from '../src/components/Login.jsx'
 import Registro, { validarRegistro } from '../src/components/Registro.jsx'
-import Recuperar from '../src/components/Recuperar.jsx'
+import { CambiarContrasenaDialog, RestablecerContrasenaDialog, validarCambioClave } from '../src/components/perfil/ContrasenaDialog.jsx'
 import EntityForm from '../src/components/EntityForm.jsx'
 import PanelConductor from '../src/components/conductor/PanelConductor.jsx'
 import Pagination from '../src/components/ui/Pagination.jsx'
 import { PasoSecciones } from '../src/components/ui/Navegador.jsx'
 import { ToastProvider } from '../src/components/ui/Toast.jsx'
 import { entities, entidadesVisibles, groups } from '../src/entities.js'
-import { buildInitialValues, buildPayload, validateValues } from '../src/lib/form.js'
+import { ayudaDe, buildInitialValues, buildPayload, validateValues } from '../src/lib/form.js'
 import {
+  errorContrasena,
   errorDocumento,
+  esEnmascarado,
   errorNombre,
   errorPlaca,
   errorTelefono,
@@ -24,7 +33,8 @@ import {
   limpiarEntero,
   limpiarNombre,
   limpiarPlaca,
-  limpiarTelefono
+  limpiarTelefono,
+  quitarMascara
 } from '../src/lib/validaciones.js'
 import {
   columnLabel,
@@ -60,7 +70,7 @@ const renderiza = (nombre, elemento) => {
   }
 }
 
-
+// ---------------------------------------------------- 1. HUMO
 console.log('\n· Renderizado de pantallas')
 
 const admin = {
@@ -79,6 +89,8 @@ const conductor = {
 
 const servicios = entities.find((e) => e.key === 'servicios')
 const vehiculos = entities.find((e) => e.key === 'vehiculos')
+
+// La navegación la crea App.jsx y se pasa a los paneles: aquí se simula.
 const navFalso = (ruta) => ({
   ruta,
   ir: () => {},
@@ -142,7 +154,7 @@ chequear(
   ['confirmar', 'contrasena', 'numero_documento']
 )
 
-
+// -------------------------------------------- 2. NAVEGACIÓN
 console.log('\n· Navegación entre pantallas')
 
 const panelAdmin = renderToStaticMarkup(
@@ -184,7 +196,7 @@ const pasoPrimera = renderToStaticMarkup(
 )
 chequear('en la primera sección no hay flecha «Anterior»', pasoPrimera.includes('Anterior'), false)
 
-
+// ---------------------------------------------- 3. PAGINACIÓN
 console.log('\n· Paginación')
 
 const paginacion = (pagina, total, tamano = 10) => {
@@ -456,16 +468,114 @@ chequear(
 )
 chequear('el código de servicio nunca se envía', 'codigo_servicio' in buildPayload(servicios.fields, { ...vacios, codigo_servicio: 'SVC-9' }), false)
 
-// ------------------------------------------- 7c. RECUPERAR CONTRASEÑA
-console.log('\n· Recuperar contraseña')
+// ------------------------------------------- 7c. CONTRASEÑAS
+console.log('\n· Contraseñas (sin recuperación pública)')
 
-const htmlRecuperar = renderiza('pantalla de recuperación', <Recuperar onIrALogin={() => {}} onVolver={() => {}} />)
-chequear('pide correo, teléfono y la nueva contraseña dos veces',
-  ['rec-correo', 'rec-telefono', 'rec-contrasena', 'rec-confirmar'].every((id) => htmlRecuperar.includes(`id="${id}"`)), true)
-chequear('cada campo tiene su etiqueta asociada', (htmlRecuperar.match(/<label[^>]*for="rec-/g) || []).length, 4)
-const htmlLogin = renderToStaticMarkup(<Login onLogin={() => {}} onVolver={() => {}} onRecuperar={() => {}} />)
-chequear('el login ofrece recuperar la contraseña', htmlLogin.includes('¿Olvidaste tu contraseña?'), true)
+const htmlLogin = renderToStaticMarkup(<Login onLogin={() => {}} onVolver={() => {}} />)
+chequear('el login explica que la restablece un administrador',
+  htmlLogin.includes('¿Olvidaste tu contraseña? Pide a un administrador que la restablezca.'), true)
+chequear('el login ya no enlaza a una pantalla de recuperación', /<button[^>]*>\s*¿Olvidaste/.test(htmlLogin), false)
 chequear('el login trae el correo recordado', renderToStaticMarkup(<Login onLogin={() => {}} correoInicial="ana@x.co" />).includes('value="ana@x.co"'), true)
+
+chequear('contraseña de 8 caracteres aceptada', errorContrasena('12345678'), null)
+chequear('contraseña corta rechazada', errorContrasena('1234567'), 'Debe tener al menos 8 caracteres.')
+chequear('contraseña de más de 72 rechazada', errorContrasena('a'.repeat(73)), 'Admite como máximo 72 caracteres.')
+chequear('cambio de contraseña válido', validarCambioClave({ actual: 'vieja123', nueva: 'nuevaClave9', confirmar: 'nuevaClave9' }, { pedirActual: true }), {})
+chequear(
+  'cambio: falta la actual, nueva corta y no coinciden',
+  Object.keys(validarCambioClave({ actual: '', nueva: 'corta', confirmar: 'otra' }, { pedirActual: true })).sort(),
+  ['actual', 'confirmar', 'nueva']
+)
+chequear(
+  'la nueva no puede ser igual a la actual',
+  validarCambioClave({ actual: 'misma1234', nueva: 'misma1234', confirmar: 'misma1234' }, { pedirActual: true }).nueva,
+  'Debe ser distinta de la actual.'
+)
+chequear(
+  'restablecer (administrador) no pide la actual',
+  validarCambioClave({ nueva: 'temporal123', confirmar: 'temporal123' }),
+  {}
+)
+
+const htmlCambiar = renderiza('diálogo «Cambiar mi contraseña»', <ToastProvider><CambiarContrasenaDialog onClose={() => {}} /></ToastProvider>)
+chequear('pide la actual, la nueva y repetirla',
+  ['mi-clave-actual', 'mi-clave-nueva', 'mi-clave-confirmar'].every((id) => htmlCambiar.includes(`id="${id}"`)), true)
+chequear('cada campo tiene su etiqueta asociada', (htmlCambiar.match(/<label[^>]*for="mi-clave-/g) || []).length, 3)
+const htmlRestablecer = renderiza(
+  'diálogo «Restablecer contraseña»',
+  <ToastProvider>
+    <RestablecerContrasenaDialog cuenta={{ id_usuario: 'u2', correo: 'ana@x.co' }} nombre="Ana Ruiz" onClose={() => {}} />
+  </ToastProvider>
+)
+chequear('restablecer pide la temporal dos veces y no la actual', [
+  htmlRestablecer.includes('id="restablecer-clave-nueva"'),
+  htmlRestablecer.includes('id="restablecer-clave-confirmar"'),
+  htmlRestablecer.includes('restablecer-clave-actual')
+], [true, true, false])
+chequear('el panel del administrador ofrece cambiar la contraseña propia', panelAdmin.includes('Cambiar mi contraseña'), true)
+chequear('el panel del conductor ofrece cambiar la contraseña propia', panelConductor.includes('Cambiar mi contraseña'), true)
+
+// ------------------------------------------- 7d. DATOS ENMASCARADOS
+console.log('\n· Datos enmascarados que devuelve la API')
+
+const clientesEnt = entities.find((e) => e.key === 'clientes')
+chequear('se reconoce un valor enmascarado', esEnmascarado('••••6589'), true)
+chequear('solo la máscara también cuenta', esEnmascarado('••••'), true)
+chequear('un número normal no está enmascarado', esEnmascarado('1020306589'), false)
+chequear('un valor vacío no está enmascarado', esEnmascarado(null), false)
+chequear('escribir al final reemplaza la máscara', quitarMascara('••••65891', '••••6589'), '1')
+chequear('borrar parte de la máscara deja el campo vacío', quitarMascara('••••658', '••••6589'), '')
+chequear('sin máscara previa no se toca lo escrito', quitarMascara('123', '12'), '123')
+
+const filaConductor = {
+  id_conductor: 'u1', nombre: 'Ana', apellido: 'Ruiz', tipo_documento: 'CC',
+  numero_documento: '••••6589', licencia_conduccion: '••••4321', email: 'ana@x.co',
+  telefono: '3001234567', id_rol: 2
+}
+const inicialConductor = buildInitialValues(conductorEnt.fields, filaConductor)
+chequear('al editar, el documento enmascarado no bloquea la validación',
+  validateValues(conductorEnt.fields, inicialConductor, { filas: [filaConductor], pk: 'id_conductor', fila: filaConductor }), {})
+chequear('al editar, la fecha de nacimiento y la dirección llegan vacías', [inicialConductor.fecha_nacimiento, inicialConductor.direccion], ['', ''])
+const payloadConductor = buildPayload(conductorEnt.fields, inicialConductor)
+chequear('sin cambios, documento y licencia enmascarados no se envían', [
+  'numero_documento' in payloadConductor, 'licencia_conduccion' in payloadConductor
+], [false, false])
+chequear('sin cambios, los datos ocultos vacíos no se envían (se conservan)', [
+  'fecha_nacimiento' in payloadConductor, 'direccion' in payloadConductor
+], [false, false])
+chequear('un documento nuevo escrito completo sí se valida y se envía', [
+  validateValues(conductorEnt.fields, { ...inicialConductor, numero_documento: '12AB' }).numero_documento !== undefined,
+  buildPayload(conductorEnt.fields, { ...inicialConductor, numero_documento: '1020304050' }).numero_documento
+], [true, '1020304050'])
+chequear('el cliente con documento enmascarado tampoco se bloquea',
+  validateValues(clientesEnt.fields, buildInitialValues(clientesEnt.fields, {
+    nombre: 'Luis', apellido: 'Gómez', tipo_documento: 'CC', numero_documento: '••••', email: 'l@x.co'
+  })), {})
+chequear('ayuda del documento enmascarado al editar',
+  ayudaDe(conductorEnt.fields.find((f) => f.name === 'numero_documento'), '••••6589', true),
+  'Oculto por seguridad. Escribe el número completo solo si quieres cambiarlo.')
+chequear('ayuda normal al crear',
+  ayudaDe(conductorEnt.fields.find((f) => f.name === 'numero_documento'), '', false),
+  'Solo números. El pasaporte admite letras.')
+
+const edicionConductor = renderToStaticMarkup(
+  <ToastProvider>
+    <EntityForm entity={conductorEnt} row={filaConductor} onClose={() => {}} onSaved={() => {}} />
+  </ToastProvider>
+)
+chequear('el formulario de edición explica el documento oculto', edicionConductor.includes('Oculto por seguridad. Escribe el número completo'), true)
+chequear('y los datos que no se muestran', edicionConductor.includes('Si lo dejas vacío se conserva el valor guardado.'), true)
+const detalleConductor = renderToStaticMarkup(
+  <ToastProvider>
+    <EntityForm entity={conductorEnt} row={filaConductor} soloLectura onClose={() => {}} onSaved={() => {}} />
+  </ToastProvider>
+)
+chequear('el detalle omite los datos que la API no devuelve', detalleConductor.includes('name="direccion"'), false)
+chequear(
+  'ninguna columna por defecto es un dato que la API no devuelve',
+  entities.flatMap((e) => (e.columnas || []).filter((c) => e.fields.find((f) => f.name === c)?.privado)),
+  []
+)
 
 // ----------------------------------------------- 8. ENTIDADES
 console.log('\n· Configuración de tablas')

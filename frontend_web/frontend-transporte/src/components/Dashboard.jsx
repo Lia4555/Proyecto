@@ -5,6 +5,7 @@ import Cuentas from './Cuentas.jsx'
 import DataTable from './DataTable.jsx'
 import ReporteSemanal from './ReporteSemanal.jsx'
 import BotonAvatar from './perfil/BotonAvatar.jsx'
+import BotonContrasena from './perfil/BotonContrasena.jsx'
 import { FlechasHistorial, PasoSecciones } from './ui/Navegador.jsx'
 import { IconBuscar, IconCerrar, IconMenu, IconSalir } from './ui/Icons.jsx'
 
@@ -171,6 +172,7 @@ export default function Dashboard({ usuario, nav, onLogout }) {
                 <small>Administrador</small>
               </span>
             </div>
+            <BotonContrasena />
             <button type="button" className="btn ghost small" onClick={onLogout}>
               <IconSalir size={16} />
               Salir

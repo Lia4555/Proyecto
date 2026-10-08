@@ -1,0 +1,57 @@
+$kind: http-request
+description: |-
+  Lista los roles del sistema. Solo existen dos: **Administrador** (nivel 3) y **Conductor** (nivel 2). Devuelve un arreglo JSON con todos los registros.
+
+  ## Endpoint
+
+  `GET {{baseUrl}}/roles`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **USUARIO › Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**.
+
+  ## Permisos
+
+  - **Administrador:** ve todos los registros.
+  - **Conductor:** no tiene acceso a esta tabla (`403`).
+
+  ## Campos de la respuesta
+
+  | Campo | Tipo | Descripción |
+  | --- | --- | --- |
+  | `id_rol` | integer | Identificador único (lo asigna la base de datos). |
+  | `nombre_rol` | string | Nombre del rol (mínimo 2 caracteres). El login solo acepta `Administrador` y `Conductor`. |
+  | `descripcion` | string | Descripción del rol. |
+  | `nivel_permiso` | integer | `3` = Administrador, `2` = Conductor. Por defecto `2`. |
+
+  ## Ejemplo de respuesta
+
+  ```json
+  [
+    {
+      "id_rol": 1,
+      "nombre_rol": "Conductor",
+      "descripcion": "Conduce los servicios asignados por el administrador",
+      "nivel_permiso": 2
+    }
+  ]
+  ```
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `200 OK` | Arreglo con los registros (vacío `[]` si no hay ninguno). |
+  | `401 Unauthorized` | No se envió el token, o el token expiró (dura 8 horas). Vuelve a ejecutar el login. |
+  | `403 Forbidden` | El rol de la sesión no tiene permiso para esta operación. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+url: "{{baseUrl}}/roles"
+method: GET
+body:
+  type: text
+  content: ""
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+order: 2000

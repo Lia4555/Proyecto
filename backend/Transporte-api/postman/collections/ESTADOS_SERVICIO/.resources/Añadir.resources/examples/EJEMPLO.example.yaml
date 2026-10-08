@@ -1,0 +1,38 @@
+$kind: http-example
+request:
+  url: "{{baseUrl}}/estados-servicio"
+  method: POST
+  body:
+    type: json
+    content: "{\r
+
+      \  \"nombre_estado\": \"Programado\",\r
+
+      \  \"descripcion\": \"El viaje está agendado pero no ha iniciado\"\r
+
+      }"
+response:
+  statusCode: 201
+  statusText: Created
+  headers:
+    X-Powered-By: Express
+    Access-Control-Allow-Origin: "*"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "176"
+    ETag: W/"b0-RIrwq14Kpf2lU3FY42lw68gVoac"
+    Date: Fri, 19 Jun 2026 20:22:06 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: text
+    content: |-
+      {
+          "success": true,
+          "message": "Registro creado en estados_servicio",
+          "data": {
+              "id_estado": 1,
+              "nombre_estado": "Programado",
+              "descripcion": "El viaje está agendado pero no ha iniciado"
+          }
+      }
+order: 1000

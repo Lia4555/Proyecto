@@ -1,0 +1,66 @@
+$kind: http-request
+description: |-
+  Actualiza el tipo de alerta indicado por su `id_tipo_alerta`. Es una **actualización parcial**: solo se envían los campos que se quieren cambiar.
+
+  ## Endpoint
+
+  `PUT {{baseUrl}}/tipos-alerta/:id`
+
+  Ejemplo: `PUT {{baseUrl}}/tipos-alerta/1`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **USUARIO › Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**.
+
+  Solo un usuario con rol **Administrador** puede usar este endpoint.
+
+  ## Parámetros de ruta
+
+  | Parámetro | Tipo | Requerido | Descripción |
+  | --- | --- | --- | --- |
+  | `id` | integer | Sí | `id_tipo_alerta` del registro a actualizar. |
+
+  ## Request Body
+
+  Cualquiera de estos campos (todos opcionales), con las mismas reglas que al crear:
+
+  | Campo | Tipo | Descripción |
+  | --- | --- | --- |
+  | `nombre_tipo` | string | Nombre del tipo (mínimo 2 caracteres). **Único**. |
+  | `nivel_prioridad` | integer | Prioridad por defecto de este tipo (1 = baja … 5 = crítica). Por defecto `1`. |
+  | `descripcion` | string | Cuándo se usa este tipo de alerta. |
+
+  ## Ejemplo de Request Body
+
+  ```json
+  {
+    "nivel_prioridad": 3,
+    "descripcion": "Alertas automáticas y manuales sobre el estado mecánico de los vehículos."
+  }
+  ```
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `200 OK` | Registro actualizado. Devuelve `{ success, data }` con el registro completo. |
+  | `400 Bad Request` | No se envió ningún campo válido, o algún dato no cumple el formato (ver `detalles`). |
+  | `401 Unauthorized` | No se envió el token, o el token expiró (dura 8 horas). Vuelve a ejecutar el login. |
+  | `403 Forbidden` | El rol de la sesión no tiene permiso para esta operación. |
+  | `404 Not Found` | No existe un tipo de alerta con ese `id`. |
+  | `409 Conflict` | Ya existe otro registro con ese nombre_tipo. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+url: "{{baseUrl}}/tipos-alerta/1"
+method: PUT
+body:
+  type: json
+  content: |-
+    {
+      "nivel_prioridad": 3,
+      "descripcion": "Alertas automáticas y manuales sobre el estado mecánico de los vehículos."
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+order: 3000

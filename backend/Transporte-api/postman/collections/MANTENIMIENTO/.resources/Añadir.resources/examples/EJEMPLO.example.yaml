@@ -1,0 +1,62 @@
+$kind: http-example
+request:
+  url: "{{baseUrl}}/mantenimientos"
+  method: POST
+  body:
+    type: json
+    content: "{\r
+
+      \  \"fecha_mantenimiento\": \"2026-06-15\",\r
+
+      \  \"tipo_mantenimiento\": \"Preventivo\",\r
+
+      \  \"descripcion\": \"Cambio de aceite de motor y filtros\",\r
+
+      \  \"costo\": 450000,\r
+
+      \  \"taller_responsable\": \"TecniCentros Diesel\",\r
+
+      \  \"kilometraje_actual\": 12000,\r
+
+      \  \"proximo_mantenimiento\": \"2026-12-15\",\r
+
+      \  \"kilometraje_proximo_mantenimiento\": 22000,\r
+
+      \  \"observaciones\": \"Vehículo en perfectas condiciones\",\r
+
+      \  \"id_vehiculo\": 7\r
+
+      }"
+response:
+  statusCode: 201
+  statusText: Created
+  headers:
+    X-Powered-By: Express
+    Access-Control-Allow-Origin: "*"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "446"
+    ETag: W/"1be-kaVJNFpo27LO6pgctC3NgI4LBtk"
+    Date: Fri, 19 Jun 2026 20:31:58 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: text
+    content: |-
+      {
+          "success": true,
+          "message": "Registro creado en mantenimientos",
+          "data": {
+              "id_mantenimiento": 1,
+              "fecha_mantenimiento": "2026-06-15",
+              "tipo_mantenimiento": "Preventivo",
+              "descripcion": "Cambio de aceite de motor y filtros",
+              "costo": 450000,
+              "taller_responsable": "TecniCentros Diesel",
+              "kilometraje_actual": 12000,
+              "proximo_mantenimiento": "2026-12-15",
+              "kilometraje_proximo_mantenimiento": 22000,
+              "observaciones": "Vehículo en perfectas condiciones",
+              "id_vehiculo": 7
+          }
+      }
+order: 1000

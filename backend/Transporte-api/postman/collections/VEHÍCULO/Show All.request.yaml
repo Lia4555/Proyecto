@@ -1,0 +1,75 @@
+$kind: http-request
+description: |-
+  Lista los vehículos de la flota. Devuelve un arreglo JSON con todos los registros.
+
+  ## Endpoint
+
+  `GET {{baseUrl}}/vehiculos`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **USUARIO › Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**.
+
+  ## Permisos
+
+  - **Administrador:** ve todos los registros.
+  - Un **Conductor** solo ve los vehículos que conduce (asignado o usado en sus servicios) y solo puede cambiar `estado_operativo`, `fecha_ultimo_mantenimiento` y `fecha_proximo_mantenimiento`.
+
+  ## Campos de la respuesta
+
+  | Campo | Tipo | Descripción |
+  | --- | --- | --- |
+  | `id_vehiculo` | integer | Identificador único (lo asigna la base de datos). |
+  | `placa` | string | 5 a 7 letras o números; se guarda en mayúsculas sin espacios ni guiones (ej. `ABC123`). **Única**. |
+  | `numero_interno` | string | Número interno de la flota, solo dígitos (máx. 6). Si no se envía, lo genera el servidor (`001`, `002`…). **Único**. |
+  | `marca` | string | Marca del vehículo. |
+  | `linea` | string | Línea o referencia. |
+  | `modelo` | string | Año del modelo, como texto (ej. `"2024"`). |
+  | `color` | string | Color. |
+  | `capacidad_pasajeros` | integer | Número de pasajeros (mayor que 0). |
+  | `estado_operativo` | boolean | `true` = disponible, `false` = fuera de servicio. Por defecto `true`. |
+  | `fecha_ultimo_mantenimiento` | string (date) | Formato `YYYY-MM-DD`. |
+  | `fecha_proximo_mantenimiento` | string (date) | Formato `YYYY-MM-DD`. |
+  | `id_tipo_vehiculo` | integer | ID del tipo de vehículo (ver **TIPOS_VEHÍCULOS**). |
+  | `id_conductor_asignado` | string (UUID) \| null | Conductor asignado de forma fija (ver **CONDUCTORES**). |
+
+  ## Ejemplo de respuesta
+
+  ```json
+  [
+    {
+      "id_vehiculo": 1,
+      "placa": "HJK789",
+      "marca": "Scania",
+      "linea": "K400",
+      "modelo": "2024",
+      "color": "Azul Celeste",
+      "capacidad_pasajeros": 42,
+      "estado_operativo": true,
+      "fecha_ultimo_mantenimiento": "2026-05-01",
+      "fecha_proximo_mantenimiento": "2026-11-01",
+      "id_tipo_vehiculo": 5,
+      "id_conductor_asignado": "f38b2ffc-80a4-4f5a-91c9-bc701e7ea419",
+      "numero_interno": "001"
+    }
+  ]
+  ```
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `200 OK` | Arreglo con los registros (vacío `[]` si no hay ninguno). |
+  | `401 Unauthorized` | No se envió el token, o el token expiró (dura 8 horas). Vuelve a ejecutar el login. |
+  | `403 Forbidden` | El rol de la sesión no tiene permiso para esta operación. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+url: "{{baseUrl}}/vehiculos"
+method: GET
+body:
+  type: text
+  content: ""
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+order: 2000

@@ -1,0 +1,85 @@
+$kind: http-request
+description: |-
+  Crea un nuevo vehículo. Gestiona los vehículos de la flota.
+
+  ## Endpoint
+
+  `POST {{baseUrl}}/vehiculos`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **USUARIO › Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**.
+
+  Solo un usuario con rol **Administrador** puede usar este endpoint.
+
+  ## Request Body
+
+  | Campo | Tipo | Requerido | Descripción |
+  | --- | --- | --- | --- |
+  | `placa` | string | Sí | 5 a 7 letras o números; se guarda en mayúsculas sin espacios ni guiones (ej. `ABC123`). **Única**. |
+  | `numero_interno` | string | No (automático) | Número interno de la flota, solo dígitos (máx. 6). Si no se envía, lo genera el servidor (`001`, `002`…). **Único**. |
+  | `marca` | string | Sí | Marca del vehículo. |
+  | `linea` | string | Sí | Línea o referencia. |
+  | `modelo` | string | Sí | Año del modelo, como texto (ej. `"2024"`). |
+  | `color` | string | No | Color. |
+  | `capacidad_pasajeros` | integer | Sí | Número de pasajeros (mayor que 0). |
+  | `estado_operativo` | boolean | No | `true` = disponible, `false` = fuera de servicio. Por defecto `true`. |
+  | `fecha_ultimo_mantenimiento` | string (date) | No | Formato `YYYY-MM-DD`. |
+  | `fecha_proximo_mantenimiento` | string (date) | No | Formato `YYYY-MM-DD`. |
+  | `id_tipo_vehiculo` | integer | Sí | ID del tipo de vehículo (ver **TIPOS_VEHÍCULOS**). |
+  | `id_conductor_asignado` | string (UUID) \| null | No | Conductor asignado de forma fija (ver **CONDUCTORES**). |
+
+  Los campos que no estén en esta tabla se ignoran.
+
+  ## Ejemplo de Request Body
+
+  ```json
+  {
+    "placa": "HJK789",
+    "marca": "Scania",
+    "linea": "K400",
+    "modelo": "2024",
+    "color": "Azul Celeste",
+    "capacidad_pasajeros": 42,
+    "estado_operativo": true,
+    "fecha_ultimo_mantenimiento": "2026-05-01",
+    "fecha_proximo_mantenimiento": "2026-11-01",
+    "id_tipo_vehiculo": 5,
+    "id_conductor_asignado": "f38b2ffc-80a4-4f5a-91c9-bc701e7ea419"
+  }
+  ```
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `201 Created` | El vehículo se creó. Devuelve `{ success, message, data }` con el registro guardado. |
+  | `400 Bad Request` | Faltan campos obligatorios o algún dato no cumple el formato. El campo `detalles` indica qué campo falló y por qué. |
+  | `401 Unauthorized` | No se envió el token, o el token expiró (dura 8 horas). Vuelve a ejecutar el login. |
+  | `403 Forbidden` | El rol de la sesión no tiene permiso para esta operación. |
+  | `409 Conflict` | Ya existe un registro con ese placa o numero_interno. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+url: "{{baseUrl}}/vehiculos"
+method: POST
+body:
+  type: json
+  content: |-
+    {
+      "placa": "HJK789",
+      "marca": "Scania",
+      "linea": "K400",
+      "modelo": "2024",
+      "color": "Azul Celeste",
+      "capacidad_pasajeros": 42,
+      "estado_operativo": true,
+      "fecha_ultimo_mantenimiento": "2026-05-01",
+      "fecha_proximo_mantenimiento": "2026-11-01",
+      "id_tipo_vehiculo": 5,
+      "id_conductor_asignado": "f38b2ffc-80a4-4f5a-91c9-bc701e7ea419"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+examples: ./.resources/Añadir.resources/examples
+order: 1000

@@ -40,6 +40,7 @@ export const LoginView = ({
   const [correo, setCorreo] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [errores, setErrores] = useState<{ correo?: string; contrasena?: string }>({});
+  const [verOlvido, setVerOlvido] = useState(false);
   const campoClave = useRef<TextInput>(null);
 
   const enviar = () => {
@@ -140,6 +141,21 @@ export const LoginView = ({
               error={errores.contrasena}
             />
 
+            {/* Ya no hay recuperacion por correo y telefono (el backend la
+                retiro por seguridad): solo un administrador la restablece. */}
+            <Text
+              style={estilos.olvido}
+              onPress={() => setVerOlvido((v) => !v)}
+              accessibilityRole="button"
+            >
+              ¿Olvidaste tu contraseña?
+            </Text>
+            {verOlvido && (
+              <Text style={estilos.olvidoTexto}>
+                Pide a un administrador que restablezca tu contraseña.
+              </Text>
+            )}
+
             {error && <AvisoError mensaje={error} />}
 
             <AppButton titulo={entrando ? 'Entrando…' : 'Entrar'} onPress={enviar} cargando={entrando} />
@@ -210,5 +226,15 @@ const estilos = StyleSheet.create({
   sub: { color: colors.muted, fontSize: 14.5, lineHeight: 20, marginTop: 4, marginBottom: 22 },
   formulario: { gap: spacing.lg },
   pie: { marginTop: spacing.xl, textAlign: 'center', color: colors.muted, fontSize: 14 },
-  enlace: { color: colors.rojo, fontWeight: '700' }
+  enlace: { color: colors.rojo, fontWeight: '700' },
+  olvido: { alignSelf: 'flex-end', marginTop: -spacing.sm, color: colors.rojo, fontSize: 13.5, fontWeight: '600' },
+  olvidoTexto: {
+    marginTop: -spacing.sm,
+    padding: spacing.md,
+    borderRadius: radius.sm,
+    backgroundColor: colors.fondoInput,
+    color: colors.texto,
+    fontSize: 13.5,
+    lineHeight: 19
+  }
 });

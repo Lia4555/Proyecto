@@ -13,4 +13,5 @@ export * from './admin/GestionCuentas';
 export * from './admin/GestionServicios';
 export * from './admin/GestionAlertas';
 export * from './perfil/GestionFotoPerfil';
+export * from './perfil/CambiarContrasena';
 export * from './tablas/GestionTablas';

@@ -1,0 +1,70 @@
+$kind: http-request
+description: |-
+  Lista las alertas operativas dirigidas a un conductor (vencimientos, mantenimientos, incidentes en ruta…). Devuelve un arreglo JSON con todos los registros.
+
+  ## Endpoint
+
+  `GET {{baseUrl}}/alertas`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **USUARIO › Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**.
+
+  ## Permisos
+
+  - **Administrador:** ve todos los registros.
+  - Un **Conductor** solo ve las alertas dirigidas a él (`id_usuario_destino` = su `id_conductor`) y no puede crearlas, editarlas ni eliminarlas.
+
+  ## Campos de la respuesta
+
+  | Campo | Tipo | Descripción |
+  | --- | --- | --- |
+  | `id_alerta` | integer | Identificador único (lo asigna la base de datos). |
+  | `tipo_alerta` | string | Texto libre con el tipo de alerta (ej. "Retraso operativo"). El tipo del catálogo se indica con `id_tipo_alerta`. |
+  | `descripcion` | string | Detalle del motivo de la alerta (mínimo 2 caracteres). |
+  | `fecha_limite` | string (date) | Fecha límite para resolverla, formato `YYYY-MM-DD`. |
+  | `estado_resuelta` | boolean | `false` = pendiente, `true` = resuelta. Por defecto `false`. |
+  | `prioridad` | integer | Prioridad de la alerta (1 = baja … 5 = crítica). Por defecto `1`. |
+  | `id_usuario_destino` | string (UUID) | `id_conductor` del conductor que recibe la alerta (ver **CONDUCTORES**). |
+  | `id_tipo_alerta` | integer | ID del tipo de alerta del catálogo (ver **TIPO_DE_ALERTA**). |
+  | `id_vehiculo_relacionado` | integer \| null | ID del vehículo relacionado. |
+  | `id_servicio_relacionado` | integer \| null | ID del servicio relacionado. |
+  | `id_reserva_relacionada` | integer \| null | ID de la reserva relacionada. |
+
+  ## Ejemplo de respuesta
+
+  ```json
+  [
+    {
+      "id_alerta": 1,
+      "tipo_alerta": "Incidente en ruta",
+      "descripcion": "El servicio presenta un retraso de 30 minutos por tráfico pesado en la autopista.",
+      "fecha_limite": "2026-10-15",
+      "estado_resuelta": false,
+      "prioridad": 4,
+      "id_usuario_destino": "f38b2ffc-80a4-4f5a-91c9-bc701e7ea419",
+      "id_tipo_alerta": 4,
+      "id_vehiculo_relacionado": 2,
+      "id_servicio_relacionado": 2
+    }
+  ]
+  ```
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `200 OK` | Arreglo con los registros (vacío `[]` si no hay ninguno). |
+  | `401 Unauthorized` | No se envió el token, o el token expiró (dura 8 horas). Vuelve a ejecutar el login. |
+  | `403 Forbidden` | El rol de la sesión no tiene permiso para esta operación. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+url: "{{baseUrl}}/alertas"
+method: GET
+body:
+  type: text
+  content: ""
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+order: 2000

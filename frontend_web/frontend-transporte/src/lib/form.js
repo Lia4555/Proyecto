@@ -2,7 +2,7 @@
 // Utilidades del formulario genérico (crear / editar)
 // ============================================================
 
-import { errorDocumento, errorNombre, errorPlaca, errorTelefono } from './validaciones.js'
+import { errorDocumento, errorNombre, errorPlaca, errorTelefono, esEnmascarado } from './validaciones.js'
 
 // Campos que rellena el servidor (consecutivos): se muestran, pero nunca
 // se le preguntan al administrador ni se envían.
@@ -69,6 +69,9 @@ export function validateValues(fields, values, contexto = {}) {
       continue
     }
     if (vacio) continue
+
+    // "••••6589": el valor real está guardado y no se está cambiando.
+    if (esEnmascarado(valor)) continue
 
     if (f.type === 'email' && !RE_EMAIL.test(String(valor))) {
       errores[f.name] = 'Escribe un correo válido (ejemplo: nombre@empresa.com).'
@@ -165,10 +168,16 @@ export function buildPayload(fields, values) {
       continue
     }
 
+    // Valor enmascarado sin tocar ("••••6589"): no es un cambio, no se envía.
+    if (esEnmascarado(raw)) continue
+
     const vacio = raw === '' || raw === null || raw === undefined
     if (vacio) {
       // Obligatorio vacío -> se manda vacío para que Zod dé un error claro.
-      // Opcional vacío -> se omite (así no se pisan columnas con "").
+      // Opcional vacío -> se omite (así no se pisan columnas con ""). Así
+      // también se conservan los datos que la API ya no devuelve (fecha de
+      // nacimiento, dirección): llegan vacíos al editar y, si siguen
+      // vacíos, el valor guardado no se toca.
       if (f.required) payload[f.name] = ''
       continue
     }
@@ -185,6 +194,18 @@ export function buildPayload(fields, values) {
   }
 
   return payload
+}
+
+// Ayuda bajo el campo. Los datos delicados que la API no devuelve completos
+// lo explican: si no se tocan, se conserva lo que ya está guardado.
+export function ayudaDe(f, valor, esEdicion) {
+  if (esEdicion && f.enmascarado && esEnmascarado(valor)) {
+    return 'Oculto por seguridad. Escribe el número completo solo si quieres cambiarlo.'
+  }
+  if (esEdicion && f.privado) {
+    return 'No se muestra por seguridad. Si lo dejas vacío se conserva el valor guardado.'
+  }
+  return f.hint
 }
 
 // ¿Cambió algo respecto a los valores iniciales? (para avisar antes de cerrar)

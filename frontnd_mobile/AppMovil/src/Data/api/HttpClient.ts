@@ -34,12 +34,25 @@ type Metodo = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 export class HttpClient {
   private token: string | null = null;
+  private alPerderSesion: ((mensaje: string) => void) | null = null;
 
   constructor(private readonly baseUrl: string = ApiConfig.baseUrl) {}
 
   /** El repositorio de sesion avisa aqui cada vez que el token cambia. */
   usarToken(token: string | null): void {
     this.token = token;
+  }
+
+  /**
+   * Aviso unico cuando el servidor rechaza un token que si se envio (401):
+   * sesion caducada, revocada o cuenta desactivada ("Tu cuenta ya no esta
+   * activa..."). Devuelve la funcion para dejar de escuchar.
+   */
+  escucharSesionPerdida(oyente: (mensaje: string) => void): () => void {
+    this.alPerderSesion = oyente;
+    return () => {
+      if (this.alPerderSesion === oyente) this.alPerderSesion = null;
+    };
   }
 
   get<T>(ruta: string): Promise<T> {
@@ -92,6 +105,13 @@ export class HttpClient {
           datos && typeof datos === 'object' && Array.isArray((datos as { detalles?: unknown }).detalles)
             ? ((datos as { detalles: DetalleError[] }).detalles)
             : [];
+        // 401 con token: la sesion ya no vale. Se suelta el token antes de
+        // avisar, asi el aviso sale una sola vez aunque haya varias
+        // peticiones en vuelo (y el logout posterior no lo repite).
+        if (respuesta.status === 401 && this.token) {
+          this.token = null;
+          this.alPerderSesion?.(mensaje);
+        }
         throw new ApiError(respuesta.status, mensaje, detalles);
       }
 

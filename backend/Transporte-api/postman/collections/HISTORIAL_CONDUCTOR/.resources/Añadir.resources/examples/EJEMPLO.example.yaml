@@ -1,0 +1,47 @@
+$kind: http-example
+request:
+  url: "{{baseUrl}}/historial-conductores"
+  method: POST
+  body:
+    type: json
+    content: "{\r
+
+      \  \"id_vehiculo\": 7,\r
+
+      \  \"id_conductor\": \"fd55577c-4251-4324-bd4f-5b5f60378e87\",\r
+
+      \  \"fecha_asignacion\": \"2026-06-01\",\r
+
+      \  \"fecha_desasignacion\": null,\r
+
+      \  \"observaciones\": \"Asignado de manera permanente al bus nuevo\"\r
+
+      }"
+response:
+  statusCode: 201
+  statusText: Created
+  headers:
+    X-Powered-By: Express
+    Access-Control-Allow-Origin: "*"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "285"
+    ETag: W/"11d-L0+iuhPazwk+WWpbcduKjh71YuI"
+    Date: Fri, 19 Jun 2026 20:31:18 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: text
+    content: |-
+      {
+          "success": true,
+          "message": "Registro creado en historial_conductores",
+          "data": {
+              "id_historial": 1,
+              "id_vehiculo": 7,
+              "id_conductor": "fd55577c-4251-4324-bd4f-5b5f60378e87",
+              "fecha_asignacion": "2026-06-01",
+              "fecha_desasignacion": null,
+              "observaciones": "Asignado de manera permanente al bus nuevo"
+          }
+      }
+order: 1000

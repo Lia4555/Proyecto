@@ -1,0 +1,65 @@
+$kind: http-request
+description: |-
+  Crea un nuevo registro de historial. Gestiona el historial de asignaciones de conductores a vehículos.
+
+  ## Endpoint
+
+  `POST {{baseUrl}}/historial-conductores`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **USUARIO › Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**.
+
+  Solo un usuario con rol **Administrador** puede usar este endpoint.
+
+  ## Request Body
+
+  | Campo | Tipo | Requerido | Descripción |
+  | --- | --- | --- | --- |
+  | `id_vehiculo` | integer | Sí | ID del vehículo (ver **VEHÍCULO**). |
+  | `id_conductor` | string (UUID) | Sí | ID del conductor (ver **CONDUCTORES**). |
+  | `fecha_asignacion` | string (date) | Sí | Formato `YYYY-MM-DD`. |
+  | `fecha_desasignacion` | string (date) \| null | No | Formato `YYYY-MM-DD`; `null` si sigue asignado. |
+  | `observaciones` | string | No | Notas de la entrega del vehículo. |
+
+  Los campos que no estén en esta tabla se ignoran.
+
+  ## Ejemplo de Request Body
+
+  ```json
+  {
+    "id_vehiculo": 7,
+    "id_conductor": "f38b2ffc-80a4-4f5a-91c9-bc701e7ea419",
+    "fecha_asignacion": "2026-10-01",
+    "fecha_desasignacion": null,
+    "observaciones": "Asignado de manera permanente al bus nuevo."
+  }
+  ```
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `201 Created` | El registro de historial se creó. Devuelve `{ success, message, data }` con el registro guardado. |
+  | `400 Bad Request` | Faltan campos obligatorios o algún dato no cumple el formato. El campo `detalles` indica qué campo falló y por qué. |
+  | `401 Unauthorized` | No se envió el token, o el token expiró (dura 8 horas). Vuelve a ejecutar el login. |
+  | `403 Forbidden` | El rol de la sesión no tiene permiso para esta operación. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+url: "{{baseUrl}}/historial-conductores"
+method: POST
+body:
+  type: json
+  content: |-
+    {
+      "id_vehiculo": 7,
+      "id_conductor": "f38b2ffc-80a4-4f5a-91c9-bc701e7ea419",
+      "fecha_asignacion": "2026-10-01",
+      "fecha_desasignacion": null,
+      "observaciones": "Asignado de manera permanente al bus nuevo."
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+examples: ./.resources/Añadir.resources/examples
+order: 1000

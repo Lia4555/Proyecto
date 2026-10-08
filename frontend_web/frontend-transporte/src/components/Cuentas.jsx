@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import api, { getErrorMessage } from '../api/api.js'
 import { fechaCorta } from '../lib/format.js'
 import { ROL } from '../lib/session.js'
+import { RestablecerContrasenaDialog } from './perfil/ContrasenaDialog.jsx'
 import ConfirmDialog from './ui/ConfirmDialog.jsx'
 import { useToast } from './ui/Toast.jsx'
 import { IconActualizar, IconAlerta, IconOk, IconVacio } from './ui/Icons.jsx'
@@ -43,6 +44,7 @@ export default function Cuentas() {
   const [filtro, setFiltro] = useState('pendientes')
   const [procesando, setProcesando] = useState(null) // id_usuario en curso
   const [confirmar, setConfirmar] = useState(null) // { accion, cuenta }
+  const [restablecer, setRestablecer] = useState(null) // cuenta a la que se le pone clave temporal
 
   const cargar = useCallback(async () => {
     setCargando(true)
@@ -258,16 +260,28 @@ export default function Cuentas() {
                             </button>
                           </div>
                         ) : c.es_tu_cuenta ? (
+                          // La propia contraseña se cambia desde la llave de la cabecera.
                           <span className="field-hint">—</span>
                         ) : (
-                          <button
-                            type="button"
-                            className="btn ghost small"
-                            onClick={() => setConfirmar({ accion: 'desactivar', cuenta: c })}
-                            disabled={ocupada}
-                          >
-                            Desactivar
-                          </button>
+                          <div className="acciones-cuenta">
+                            <button
+                              type="button"
+                              className="btn ghost small"
+                              onClick={() => setRestablecer(c)}
+                              disabled={ocupada}
+                              title="Ponerle una contraseña temporal si olvidó la suya"
+                            >
+                              Restablecer contraseña
+                            </button>
+                            <button
+                              type="button"
+                              className="btn ghost small"
+                              onClick={() => setConfirmar({ accion: 'desactivar', cuenta: c })}
+                              disabled={ocupada}
+                            >
+                              Desactivar
+                            </button>
+                          </div>
                         )}
                       </td>
                     </tr>
@@ -301,7 +315,7 @@ export default function Cuentas() {
               ? 'Su ficha de conductor también se borra si no tiene servicios ni vehículos asignados.'
               : confirmar.accion === 'aprobar-admin'
                 ? 'Si querías darle acceso solo a sus servicios y su vehículo, cancela y usa el botón «Conductor».'
-                : 'Si tiene una sesión abierta, seguirá activa hasta que caduque (máximo 8 horas).'
+                : 'Si tiene una sesión abierta, se cerrará en cuanto haga su siguiente acción.'
           }
           textoConfirmar={
             confirmar.accion === 'rechazar'
@@ -317,6 +331,14 @@ export default function Cuentas() {
               : ejecutar(confirmar.accion, confirmar.cuenta)
           }
           onCancel={() => setConfirmar(null)}
+        />
+      )}
+
+      {restablecer && (
+        <RestablecerContrasenaDialog
+          cuenta={restablecer}
+          nombre={nombreCompleto(restablecer)}
+          onClose={() => setRestablecer(null)}
         />
       )}
     </section>

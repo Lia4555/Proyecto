@@ -1,0 +1,78 @@
+$kind: http-example
+request:
+  url: "{{baseUrl}}/servicios"
+  method: POST
+  body:
+    type: json
+    content: "{\r
+
+      \  \"codigo_servicio\": \"SER-2026-MED\",\r
+
+      \  \"tipo_servicio\": \"Pasajeros\",\r
+
+      \  \"fecha_salida\": \"2026-06-25T06:00:00Z\",\r
+
+      \  \"fecha_llegada_estimada\": \"2026-06-25T14:30:00Z\",\r
+
+      \  \"fecha_llegada_real\":\"2026-06-25T15:30:00Z\" ,\r
+
+      \  \"numero_pasajeros\": 25,\r
+
+      \  \"precio_total\": 1250000,\r
+
+      \  \"distancia_estimada_km\": 420,\r
+
+      \  \"peajes_estimados\": 68000,\r
+
+      \  \"observaciones\": \"Ruta por autopista principal\",\r
+
+      \  \"id_conductor\": \"fd55577c-4251-4324-bd4f-5b5f60378e87\",\r
+
+      \  \"id_vehiculo\": 7,\r
+
+      \  \"id_origen\": 1,\r
+
+      \  \"id_destino\": 1,\r
+
+      \  \"id_estado\": 1\r
+
+      }"
+response:
+  statusCode: 201
+  statusText: Created
+  headers:
+    X-Powered-By: Express
+    Access-Control-Allow-Origin: "*"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "599"
+    ETag: W/"257-cM4hZ6l20x7Cmiamb4cKrGVYWdY"
+    Date: Fri, 19 Jun 2026 20:35:29 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: text
+    content: |-
+      {
+          "success": true,
+          "message": "Registro creado en servicios",
+          "data": {
+              "id_servicio": 1,
+              "codigo_servicio": "SER-2026-MED",
+              "tipo_servicio": "Pasajeros",
+              "fecha_solicitud": "2026-06-19T20:35:29.482222+00:00",
+              "fecha_salida": "2026-06-25T06:00:00+00:00",
+              "fecha_llegada_estimada": "2026-06-25T14:30:00+00:00",
+              "fecha_llegada_real": "2026-06-25T15:30:00+00:00",
+              "numero_pasajeros": 25,
+              "precio_total": 1250000,
+              "distancia_estimada_km": 420,
+              "peajes_estimados": 68000,
+              "observaciones": "Ruta por autopista principal",
+              "id_conductor": "fd55577c-4251-4324-bd4f-5b5f60378e87",
+              "id_vehiculo": 7,
+              "id_origen": 1,
+              "id_destino": 1,
+              "id_estado": 1
+          }
+      }
+order: 1000

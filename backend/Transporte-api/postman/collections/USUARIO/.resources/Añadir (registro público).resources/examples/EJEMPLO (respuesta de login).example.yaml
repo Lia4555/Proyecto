@@ -1,0 +1,35 @@
+$kind: http-example
+request:
+  url: "{{baseUrl}}/auth/login"
+  method: POST
+  body:
+    type: json
+    content: |-
+      {
+        "correo": "{{correo}}",
+        "contrasena": "{{contrasena}}"
+      }
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    X-Powered-By: Express
+    Access-Control-Allow-Origin: "*"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "348"
+    ETag: W/"15c-LbEfUXCA0ufk4nPRI5Ynk561PME"
+    Date: Fri, 19 Jun 2026 20:15:14 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: text
+    content: |-
+      {
+          "message": "¡Login exitoso!",
+          "token": "",
+          "user": {
+              "correo": "liamariana@gmail.com",
+              "id_rol": 1
+          }
+      }
+order: 1000

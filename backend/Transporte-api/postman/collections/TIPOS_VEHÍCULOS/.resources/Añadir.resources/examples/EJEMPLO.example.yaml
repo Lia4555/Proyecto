@@ -1,0 +1,38 @@
+$kind: http-example
+request:
+  url: "{{baseUrl}}/tipos-vehiculo"
+  method: POST
+  body:
+    type: json
+    content: "{\r
+
+      \  \"nombre_tipo\": \"Autobús de Dos Pisos\",\r
+
+      \  \"descripcion\": \"Vehículo de larga distancia con capacidad superior\"\r
+
+      }"
+response:
+  statusCode: 201
+  statusText: Created
+  headers:
+    X-Powered-By: Express
+    Access-Control-Allow-Origin: "*"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "198"
+    ETag: W/"c6-/F8cKUWxjApZPR6OAm0IHKA0HWo"
+    Date: Fri, 19 Jun 2026 20:25:02 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: text
+    content: |-
+      {
+          "success": true,
+          "message": "Registro creado en tipos_vehiculo",
+          "data": {
+              "id_tipo_vehiculo": 2,
+              "nombre_tipo": "Autobús de Dos Pisos",
+              "descripcion": "Vehículo de larga distancia con capacidad superior"
+          }
+      }
+order: 1000

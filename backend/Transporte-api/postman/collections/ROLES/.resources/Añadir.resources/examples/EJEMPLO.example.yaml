@@ -1,0 +1,42 @@
+$kind: http-example
+request:
+  url: "{{baseUrl}}/roles"
+  method: POST
+  body:
+    type: json
+    content: "{\r
+
+      \  \"nombre_rol\": \"Administrador\",\r
+
+      \  \"descripcion\": \"Control total del sistema operativo y rutas\",\r
+
+      \  \"nivel_permiso\": 3\r
+
+      }"
+response:
+  statusCode: 201
+  statusText: Created
+  headers:
+    X-Powered-By: Express
+    Access-Control-Allow-Origin: "*"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "232"
+    ETag: W/"e8-V7lr/UfXMGYbg7H+Ib6Zan75Wiw"
+    Date: Fri, 19 Jun 2026 20:20:20 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: text
+    content: |-
+      {
+          "success": true,
+          "message": "Registro creado en roles",
+          "data": {
+              "id_rol": 3,
+              "nombre_rol": "Administrador",
+              "descripcion": "Control total del sistema operativo y rutas",
+              "nivel_permiso": 3,
+              "fecha_creacion": "2026-06-19T20:20:20.489045+00:00"
+          }
+      }
+order: 1000
