@@ -1,0 +1,146 @@
+-- ========================================================
+-- SISTEMA DE TRANSPORTE - ESQUEMA DE BASE DE DATOS
+-- Motor: PostgreSQL (compatible con Supabase)
+-- Contenido: solo estructura (DDL). No incluye datos.
+-- ========================================================
+
+-- ========================================================
+-- BLOQUE 1: TABLAS DE PARAMETRIZACIÓN (CONFIGURACIÓN)
+-- ========================================================
+
+CREATE TABLE "Roles" (
+    "id_rol" SERIAL PRIMARY KEY,
+    "nombre" VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE "TiposDocumentos" (
+    "id_tipo_documento" SERIAL PRIMARY KEY,
+    "nombre" VARCHAR(50) NOT NULL UNIQUE,
+    "sigla" VARCHAR(10) NOT NULL
+);
+
+CREATE TABLE "EstadosServicio" (
+    "id_estado" SERIAL PRIMARY KEY,
+    "nombre" VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE "TiposAlerta" (
+    "id_tipo_alerta" SERIAL PRIMARY KEY,
+    "nombre" VARCHAR(50) NOT NULL UNIQUE,
+    "gravedad" VARCHAR(20) DEFAULT 'Moderada'
+);
+
+CREATE TABLE "Destinos" (
+    "id_destino" SERIAL PRIMARY KEY,
+    "ciudad" VARCHAR(100) NOT NULL,
+    "terminal_sitio" VARCHAR(150),
+    "departamento" VARCHAR(100)
+);
+
+CREATE TABLE "ClasesViaje" (
+    "id_clase" SERIAL PRIMARY KEY,
+    "nombre" VARCHAR(50) NOT NULL UNIQUE, -- Ejemplo: VIP, Económico, Ejecutivo
+    "descripcion" TEXT
+);
+
+CREATE TABLE "TiposVehiculo" (
+    "id_tipo_vehiculo" SERIAL PRIMARY KEY,
+    "nombre" VARCHAR(50) NOT NULL UNIQUE, -- Ejemplo: Van, Bus, Automóvil
+    "capacidad_pasajeros" INT NOT NULL
+);
+
+-- ========================================================
+-- BLOQUE 2: TABLAS OPERATIVAS (ENTIDADES CORE)
+-- ========================================================
+
+CREATE TABLE "Conductor" (
+    "id_conductor" SERIAL PRIMARY KEY,
+    "nombre" VARCHAR(100) NOT NULL,
+    "apellido" VARCHAR(100) NOT NULL,
+    "email" VARCHAR(150) NOT NULL UNIQUE,
+    "password" VARCHAR(255) NOT NULL,
+    "telefono" VARCHAR(20),
+    "id_rol" INT REFERENCES "Roles"("id_rol") ON DELETE SET NULL,
+    "activo" BOOLEAN DEFAULT TRUE,
+    "fecha_registro" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE "Vehiculos" (
+    "id_vehiculo" SERIAL PRIMARY KEY,
+    "placa" VARCHAR(10) NOT NULL UNIQUE,
+    "modelo" VARCHAR(50),
+    "marca" VARCHAR(50),
+    "año" INT,
+    "id_tipo_vehiculo" INT REFERENCES "TiposVehiculo"("id_tipo_vehiculo") ON DELETE SET NULL,
+    "activo" BOOLEAN DEFAULT TRUE
+);
+
+CREATE TABLE "HistorialConductores" (
+    "id_historial" SERIAL PRIMARY KEY,
+    "id_conductor" INT REFERENCES "Conductor"("id_conductor") ON DELETE CASCADE,
+    "id_vehiculo" INT REFERENCES "Vehiculos"("id_vehiculo") ON DELETE SET NULL,
+    "fecha_asignacion" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    "observaciones" TEXT
+);
+
+CREATE TABLE "Cliente" (
+    "id_cliente" SERIAL PRIMARY KEY,
+    "nombre" VARCHAR(100) NOT NULL,
+    "apellido" VARCHAR(100) NOT NULL,
+    "email" VARCHAR(150) NOT NULL UNIQUE,
+    "password" VARCHAR(255) NOT NULL,
+    "telefono" VARCHAR(20),
+    "id_rol" INT REFERENCES "Roles"("id_rol") ON DELETE SET NULL,
+    "fecha_registro" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ========================================================
+-- BLOQUE 3: TABLAS TRANSACCIONALES (PROCESOS)
+-- ========================================================
+
+CREATE TABLE "DocumentosVehiculo" (
+    "id_documento" SERIAL PRIMARY KEY,
+    "id_vehiculo" INT REFERENCES "Vehiculos"("id_vehiculo") ON DELETE CASCADE,
+    "id_tipo_documento" INT REFERENCES "TiposDocumentos"("id_tipo_documento") ON DELETE SET NULL,
+    "numero_documento" VARCHAR(50) NOT NULL,
+    "fecha_vencimiento" DATE NOT NULL,
+    "url_documento" TEXT
+);
+
+CREATE TABLE "Servicios" (
+    "id_servicio" SERIAL PRIMARY KEY,
+    "id_vehiculo" INT REFERENCES "Vehiculos"("id_vehiculo") ON DELETE SET NULL,
+    "id_conductor" INT REFERENCES "Conductor"("id_conductor") ON DELETE SET NULL,
+    "id_destino_origen" INT REFERENCES "Destinos"("id_destino") ON DELETE SET NULL,
+    "id_destino_final" INT REFERENCES "Destinos"("id_destino") ON DELETE SET NULL,
+    "id_clase" INT REFERENCES "ClasesViaje"("id_clase") ON DELETE SET NULL,
+    "id_estado" INT REFERENCES "EstadosServicio"("id_estado") ON DELETE SET NULL,
+    "fecha_salida" TIMESTAMP NOT NULL,
+    "precio_asiento" DECIMAL(10,2) NOT NULL,
+    "cupos_disponibles" INT NOT NULL
+);
+
+CREATE TABLE "Reservas" (
+    "id_reserva" SERIAL PRIMARY KEY,
+    "id_servicio" INT REFERENCES "Servicios"("id_servicio") ON DELETE CASCADE,
+    "id_cliente" INT REFERENCES "Cliente"("id_cliente") ON DELETE CASCADE,
+    "asientos_reservados" INT NOT NULL,
+    "total_pago" DECIMAL(10,2) NOT NULL,
+    "fecha_reserva" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE "Alertas" (
+    "id_alerta" SERIAL PRIMARY KEY,
+    "id_tipo_alerta" INT REFERENCES "TiposAlerta"("id_tipo_alerta") ON DELETE CASCADE,
+    "id_servicio" INT REFERENCES "Servicios"("id_servicio") ON DELETE CASCADE,
+    "descripcion" TEXT NOT NULL,
+    "fecha_alerta" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE "Mantenimientos" (
+    "id_mantenimiento" SERIAL PRIMARY KEY,
+    "id_vehiculo" INT REFERENCES "Vehiculos"("id_vehiculo") ON DELETE CASCADE,
+    "descripcion" TEXT NOT NULL,
+    "costo" DECIMAL(10,2),
+    "fecha_mantenimiento" DATE NOT NULL
+);
