@@ -1,0 +1,57 @@
+$kind: http-request
+description: |-
+  Crea un nuevo tipo de documento. Gestiona el catálogo de tipos de documento de vehículo (SOAT, tecnomecánica…).
+
+  ## Endpoint
+
+  `POST {{baseUrl}}/tipos-documentos`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **USUARIO › Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**.
+
+  Solo un usuario con rol **Administrador** puede usar este endpoint.
+
+  ## Request Body
+
+  | Campo | Tipo | Requerido | Descripción |
+  | --- | --- | --- | --- |
+  | `nombre_tipo` | string | Sí | Nombre del tipo de documento (mínimo 2 caracteres). **Único**. |
+  | `vigencia_meses` | integer | No | Meses de vigencia (mayor que 0). |
+
+  Los campos que no estén en esta tabla se ignoran.
+
+  ## Ejemplo de Request Body
+
+  ```json
+  {
+    "nombre_tipo": "Tarjeta de Operación Intermunicipal",
+    "vigencia_meses": 12
+  }
+  ```
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `201 Created` | El tipo de documento se creó. Devuelve `{ success, message, data }` con el registro guardado. |
+  | `400 Bad Request` | Faltan campos obligatorios o algún dato no cumple el formato. El campo `detalles` indica qué campo falló y por qué. |
+  | `401 Unauthorized` | No se envió el token, o el token expiró (dura 8 horas). Vuelve a ejecutar el login. |
+  | `403 Forbidden` | El rol de la sesión no tiene permiso para esta operación. |
+  | `409 Conflict` | Ya existe un registro con ese nombre_tipo. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+url: "{{baseUrl}}/tipos-documentos"
+method: POST
+body:
+  type: json
+  content: |-
+    {
+      "nombre_tipo": "Tarjeta de Operación Intermunicipal",
+      "vigencia_meses": 12
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+examples: ./.resources/Añadir.resources/examples
+order: 1000

@@ -1,0 +1,68 @@
+$kind: http-request
+description: |-
+  El administrador pone una **contraseña temporal** a una cuenta (por ejemplo, cuando la persona la olvidó). Sustituye a la antigua recuperación pública con correo y teléfono, que se retiró por seguridad.
+
+  ## Endpoint
+
+  `PATCH {{baseUrl}}/cuentas/:id/contrasena`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**.
+
+  Solo un usuario con rol **Administrador** puede usar este endpoint.
+
+  ## Parámetros de ruta
+
+  Parámetro `id`: `id_usuario` (UUID) de la cuenta. Se toma de **Show All (listar cuentas)** y se pone en la variable `id_cuenta` del environment, o se pega directamente en la URL.
+
+  ## Request Body
+
+  | Campo | Tipo | Requerido | Descripción |
+  | --- | --- | --- | --- |
+  | `contrasena` | string | Sí | Contraseña temporal, de 8 a 72 caracteres. |
+
+  ## Ejemplo de Request Body
+
+  ```json
+  {
+    "contrasena": "TemporalSegura2026"
+  }
+  ```
+
+  ## Ejemplo de respuesta
+
+  ```json
+  {
+    "success": true,
+    "message": "Contraseña de andres.ruiz@gmail.com restablecida. Entrégasela por un canal seguro y pídele que la cambie al entrar."
+  }
+  ```
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `200 OK` | Contraseña restablecida. Las sesiones abiertas de esa cuenta se cierran. |
+  | `400 Bad Request` | La contraseña no cumple el formato (ver `detalles`). |
+  | `401 Unauthorized` | No se envió el token, expiró o la cuenta de la sesión ya no está activa. |
+  | `403 Forbidden` | La sesión no es de un Administrador. |
+  | `404 Not Found` | No existe una cuenta con ese `id`. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+
+  ## Notas
+
+  - Entrega la contraseña temporal por un canal seguro y pide que la cambien con **Cambiar mi contraseña**.
+url: "{{baseUrl}}/cuentas/{{id_cuenta}}/contrasena"
+method: PATCH
+body:
+  type: json
+  content: |-
+    {
+      "contrasena": "TemporalSegura2026"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+order: 8000

@@ -5,7 +5,7 @@ import { IconAlerta, IconOjo, IconOjoCerrado } from './ui/Icons.jsx'
 
 const RE_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
-export default function Login({ onLogin, onVolver, onCrearCuenta, onRecuperar, correoInicial = '' }) {
+export default function Login({ onLogin, onVolver, onCrearCuenta, correoInicial = '' }) {
   const [correo, setCorreo] = useState(correoInicial)
   const [contrasena, setContrasena] = useState('')
   const [verClave, setVerClave] = useState(false)
@@ -110,13 +110,11 @@ export default function Login({ onLogin, onVolver, onCrearCuenta, onRecuperar, c
           {cargando ? 'Entrando…' : 'Entrar'}
         </button>
 
-        {onRecuperar && (
-          <p className="login-recuperar">
-            <button type="button" className="linkbtn" onClick={onRecuperar}>
-              ¿Olvidaste tu contraseña?
-            </button>
-          </p>
-        )}
+        {/* Ya no hay recuperación con correo y teléfono (se retiró por
+            seguridad): la contraseña la restablece un administrador. */}
+        <p className="login-recuperar">
+          ¿Olvidaste tu contraseña? Pide a un administrador que la restablezca.
+        </p>
       </form>
 
       {/* El registro crea una cuenta de conductor apagada: no entra hasta que

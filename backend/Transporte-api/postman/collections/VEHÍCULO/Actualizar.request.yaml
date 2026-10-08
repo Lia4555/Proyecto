@@ -1,0 +1,77 @@
+$kind: http-request
+description: |-
+  Actualiza el vehículo indicado por su `id_vehiculo`. Es una **actualización parcial**: solo se envían los campos que se quieren cambiar.
+
+  ## Endpoint
+
+  `PUT {{baseUrl}}/vehiculos/:id`
+
+  Ejemplo: `PUT {{baseUrl}}/vehiculos/4`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **USUARIO › Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**.
+
+  Un **Conductor** solo ve los vehículos que conduce (asignado o usado en sus servicios) y solo puede cambiar `estado_operativo`, `fecha_ultimo_mantenimiento` y `fecha_proximo_mantenimiento`.
+
+  ## Parámetros de ruta
+
+  | Parámetro | Tipo | Requerido | Descripción |
+  | --- | --- | --- | --- |
+  | `id` | integer | Sí | `id_vehiculo` del registro a actualizar. |
+
+  ## Request Body
+
+  Cualquiera de estos campos (todos opcionales), con las mismas reglas que al crear:
+
+  | Campo | Tipo | Descripción |
+  | --- | --- | --- |
+  | `placa` | string | 5 a 7 letras o números; se guarda en mayúsculas sin espacios ni guiones (ej. `ABC123`). **Única**. |
+  | `numero_interno` | string | Número interno de la flota, solo dígitos (máx. 6). Si no se envía, lo genera el servidor (`001`, `002`…). **Único**. |
+  | `marca` | string | Marca del vehículo. |
+  | `linea` | string | Línea o referencia. |
+  | `modelo` | string | Año del modelo, como texto (ej. `"2024"`). |
+  | `color` | string | Color. |
+  | `capacidad_pasajeros` | integer | Número de pasajeros (mayor que 0). |
+  | `estado_operativo` | boolean | `true` = disponible, `false` = fuera de servicio. Por defecto `true`. |
+  | `fecha_ultimo_mantenimiento` | string (date) | Formato `YYYY-MM-DD`. |
+  | `fecha_proximo_mantenimiento` | string (date) | Formato `YYYY-MM-DD`. |
+  | `id_tipo_vehiculo` | integer | ID del tipo de vehículo (ver **TIPOS_VEHÍCULOS**). |
+  | `id_conductor_asignado` | string (UUID) \| null | Conductor asignado de forma fija (ver **CONDUCTORES**). |
+
+  ## Ejemplo de Request Body
+
+  ```json
+  {
+    "estado_operativo": true,
+    "fecha_ultimo_mantenimiento": "2026-10-01",
+    "fecha_proximo_mantenimiento": "2027-04-01"
+  }
+  ```
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `200 OK` | Registro actualizado. Devuelve `{ success, data }` con el registro completo. |
+  | `400 Bad Request` | No se envió ningún campo válido, o algún dato no cumple el formato (ver `detalles`). |
+  | `401 Unauthorized` | No se envió el token, o el token expiró (dura 8 horas). Vuelve a ejecutar el login. |
+  | `403 Forbidden` | El rol de la sesión no tiene permiso para esta operación. |
+  | `404 Not Found` | No existe un vehículo con ese `id`. |
+  | `409 Conflict` | Ya existe otro registro con ese placa o numero_interno. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+url: "{{baseUrl}}/vehiculos/4"
+method: PUT
+body:
+  type: json
+  content: |-
+    {
+      "estado_operativo": true,
+      "fecha_ultimo_mantenimiento": "2026-10-01",
+      "fecha_proximo_mantenimiento": "2027-04-01"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+order: 3000

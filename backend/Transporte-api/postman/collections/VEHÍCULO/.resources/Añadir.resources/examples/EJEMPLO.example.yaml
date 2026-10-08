@@ -1,0 +1,68 @@
+$kind: http-example
+request:
+  url: "{{baseUrl}}/vehiculos"
+  method: POST
+  body:
+    type: json
+    content: "{\r
+
+      \  \"placa\": \"HJK789\",\r
+
+      \  \"numero_interno\": \"BUS-102\",\r
+
+      \  \"marca\": \"Scania\",\r
+
+      \  \"linea\": \"K400\",\r
+
+      \  \"modelo\": \"2024\",\r
+
+      \  \"color\": \"Azul Celeste\",\r
+
+      \  \"capacidad_pasajeros\": 42,\r
+
+      \  \"estado_operativo\": true,\r
+
+      \  \"fecha_ultimo_mantenimiento\": \"2026-05-01\",\r
+
+      \  \"fecha_proximo_mantenimiento\": \"2026-11-01\",\r
+
+      \  \"id_tipo_vehiculo\": 1,\r
+
+      \  \"id_conductor_asignado\": \"fd55577c-4251-4324-bd4f-5b5f60378e87\"\r
+
+      }"
+response:
+  statusCode: 201
+  statusText: Created
+  headers:
+    X-Powered-By: Express
+    Access-Control-Allow-Origin: "*"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "415"
+    ETag: W/"19f-dZxYKtsqH0iCjbqp7Fu3E6lyH/o"
+    Date: Fri, 19 Jun 2026 20:28:24 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: text
+    content: |-
+      {
+          "success": true,
+          "message": "Registro creado en vehiculos",
+          "data": {
+              "id_vehiculo": 7,
+              "placa": "HJK789",
+              "numero_interno": "BUS-102",
+              "marca": "Scania",
+              "linea": "K400",
+              "modelo": "2024",
+              "color": "Azul Celeste",
+              "capacidad_pasajeros": 42,
+              "estado_operativo": true,
+              "fecha_ultimo_mantenimiento": "2026-05-01",
+              "fecha_proximo_mantenimiento": "2026-11-01",
+              "id_tipo_vehiculo": 1,
+              "id_conductor_asignado": "fd55577c-4251-4324-bd4f-5b5f60378e87"
+          }
+      }
+order: 1000

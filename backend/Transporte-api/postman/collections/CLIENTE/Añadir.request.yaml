@@ -1,0 +1,84 @@
+$kind: http-request
+description: |-
+  Crea un nuevo cliente. Gestiona los clientes (pasajeros) que hacen reservas.
+
+  ## Endpoint
+
+  `POST {{baseUrl}}/clientes`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **USUARIO › Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**. Además, en cada petición se comprueba que la cuenta siga activa: si un administrador la desactiva, el token deja de servir al momento (`401`).
+
+  Solo un usuario con rol **Administrador** puede usar este endpoint.
+
+  ## Request Body
+
+  | Campo | Tipo | Requerido | Descripción |
+  | --- | --- | --- | --- |
+  | `nombre` | string | Sí | Solo letras y espacios, de 2 a 60 caracteres. |
+  | `apellido` | string | Sí | Solo letras y espacios, de 2 a 60 caracteres. |
+  | `tipo_documento` | string | Sí | Tipo de documento: `CC`, `CE`, `TI`, `NIT` (solo números) o `PA` (pasaporte, letras y números). |
+  | `numero_documento` | string | Sí | De 5 a 15 dígitos (pasaporte: 5 a 20 letras o números). Puntos y espacios se eliminan solos. **Único**. |
+  | `email` | string (email) | Sí | Correo electrónico. **Único**. |
+  | `telefono` | string | No | Entre 7 y 15 dígitos; admite espacios y un `+` inicial. |
+  | `fecha_nacimiento` | string (date) | No | Formato `YYYY-MM-DD`. |
+  | `direccion` | string | No | Dirección de residencia. |
+
+  Los campos que no estén en esta tabla (incluida la clave `id_cliente`) se ignoran.
+
+  ## Datos delicados
+
+  Por protección de datos personales, la API **nunca devuelve completos** estos campos, tampoco al administrador:
+
+  - **No se devuelven:** `fecha_nacimiento`, `direccion`.
+  - **Llegan enmascarados** (solo los últimos 4 caracteres, ej. `••••5678`): `numero_documento`.
+
+  Sí se pueden enviar al crear: se guardan completos, solo no se leen después.
+
+  ## Ejemplo de Request Body
+
+  ```json
+  {
+    "nombre": "Anamaría",
+    "apellido": "Restrepo",
+    "tipo_documento": "CE",
+    "numero_documento": "523456",
+    "email": "anamaria@email.com",
+    "telefono": "3159998877",
+    "fecha_nacimiento": "1998-09-30",
+    "direccion": "Calle 100 #15-22"
+  }
+  ```
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `201 Created` | El cliente se creó. Devuelve `{ success, message, data }` con el registro guardado. |
+  | `400 Bad Request` | Faltan campos obligatorios o algún dato no cumple el formato. El campo `detalles` indica qué campo falló y por qué. |
+  | `401 Unauthorized` | No se envió el token, o el token expiró (dura 8 horas). Vuelve a ejecutar el login. |
+  | `403 Forbidden` | El rol de la sesión no tiene permiso para esta operación. |
+  | `409 Conflict` | Ya existe un registro con ese numero_documento o email. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+url: "{{baseUrl}}/clientes"
+method: POST
+body:
+  type: json
+  content: |-
+    {
+      "nombre": "Anamaría",
+      "apellido": "Restrepo",
+      "tipo_documento": "CE",
+      "numero_documento": "523456",
+      "email": "anamaria@email.com",
+      "telefono": "3159998877",
+      "fecha_nacimiento": "1998-09-30",
+      "direccion": "Calle 100 #15-22"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+examples: ./.resources/Añadir.resources/examples
+order: 1000

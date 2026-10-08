@@ -1,0 +1,48 @@
+$kind: http-request
+description: |-
+  Lista las cuentas de acceso (tabla `usuario`). Nunca devuelve la contraseña.
+
+  ## Endpoint
+
+  `GET {{baseUrl}}/cuentas`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **USUARIO › Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**. Además, en cada petición se comprueba que la cuenta siga activa: si un administrador la desactiva, el token deja de servir al momento (`401`).
+
+  Solo un usuario con rol **Administrador** puede usar este endpoint.
+
+  ## Campos de la respuesta
+
+  | Campo | Tipo | Descripción |
+  | --- | --- | --- |
+  | `id_usuario` | string (UUID) | Identificador de la cuenta (se usa en aprobar, desactivar y rechazar). |
+  | `nombre` / `apellido` | string | Datos de la persona. |
+  | `correo` | string | Correo con el que inicia sesión. |
+  | `telefono` | string | Teléfono registrado. |
+  | `activo` | boolean | Si la cuenta puede iniciar sesión. |
+  | `estado` | string | `pendiente`, `activa` o `desactivada`. |
+  | `rol` | string | `Administrador` o `Conductor`. |
+  | `tiene_ficha` | boolean | Si existe una ficha en **CONDUCTORES** con el mismo correo. |
+  | `tipo_documento` | string | Tipo de documento de la ficha de conductor (si la tiene). |
+  | `numero_documento` | string | Número de documento **enmascarado** (`••••5678`). |
+  | `es_tu_cuenta` | boolean | Si es la cuenta de la sesión actual. |
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `200 OK` | Arreglo de cuentas, de la más reciente a la más antigua. |
+  | `401 Unauthorized` | No se envió el token, o el token expiró (dura 8 horas). Vuelve a ejecutar el login. |
+  | `403 Forbidden` | El rol de la sesión no tiene permiso para esta operación. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+url: "{{baseUrl}}/cuentas"
+method: GET
+body:
+  type: text
+  content: ""
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+order: 1000

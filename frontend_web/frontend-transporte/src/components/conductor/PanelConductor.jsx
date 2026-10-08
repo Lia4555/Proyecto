@@ -1,6 +1,7 @@
 import { useDatosConductor } from '../../hooks/useDatosConductor.js'
 import { nombreVisible } from '../../lib/session.js'
 import BotonAvatar from '../perfil/BotonAvatar.jsx'
+import BotonContrasena from '../perfil/BotonContrasena.jsx'
 import { useToast } from '../ui/Toast.jsx'
 import { FlechasHistorial, PasoSecciones } from '../ui/Navegador.jsx'
 import MisServicios from './MisServicios.jsx'
@@ -88,6 +89,8 @@ export default function PanelConductor({ usuario, nav, onLogout }) {
               <small>Conductor</small>
             </span>
           </div>
+
+          <BotonContrasena />
 
           <button type="button" className="btn ghost small" onClick={onLogout}>
             <IconSalir size={16} />

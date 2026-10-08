@@ -9,5 +9,11 @@ export interface AdminRepository {
    * `rol` solo se usa al aprobar: es el permiso que el administrador delega.
    */
   gestionarCuenta(idUsuario: string, accion: AccionCuenta, rol?: NombreRol): Promise<string>;
+  /**
+   * Pone una contraseña temporal a otra cuenta (sustituye a la antigua
+   * "recuperar con correo y telefono"). Devuelve el mensaje del servidor.
+   * Si el servidor rechaza la contraseña lanza ErrorValidacion({ contrasena }).
+   */
+  restablecerContrasena(idUsuario: string, contrasena: string): Promise<string>;
   conductores(): Promise<ConductorResumen[]>;
 }

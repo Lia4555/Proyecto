@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { AppButton, AppCard, Avatar, Badge, Dato, Pantalla } from '../components';
-import { useFotoPerfil, useSesion } from '../hooks';
+import { AppButton, AppCard, Avatar, AvisoExito, Badge, Dato, Pantalla } from '../components';
+import { useCambiarContrasenaViewModel, useFotoPerfil, useSesion } from '../hooks';
 import { ApiConfig } from '../../Data/config/ApiConfig';
 import { colors, spacing, TONOS, typography } from '../theme';
+import { CambiarContrasenaModal } from './CambiarContrasenaModal';
 import { FotoPerfilModal } from './FotoPerfilModal';
 
 /**
@@ -15,6 +16,7 @@ export const PerfilView = () => {
   const { usuario, salir, esAdmin } = useSesion();
   const foto = useFotoPerfil(usuario?.id_usuario);
   const [cambiandoFoto, setCambiandoFoto] = useState(false);
+  const clave = useCambiarContrasenaViewModel();
   if (!usuario) return null;
 
   const nombre = [usuario.nombre, usuario.apellido].filter(Boolean).join(' ') || 'Usuario';
@@ -55,6 +57,8 @@ export const PerfilView = () => {
           </Text>
         </AppCard>
 
+        {clave.aviso && <AvisoExito mensaje={clave.aviso} />}
+        <AppButton titulo="Cambiar contraseña" icono="llave" variante="ghost" onPress={clave.abrir} />
         <AppButton titulo="Cerrar sesión" icono="salir" variante="ghost" onPress={salir} />
 
         {/* Dato tecnico para quien desarrolla: en la app instalada para
@@ -70,6 +74,7 @@ export const PerfilView = () => {
         iniciales={iniciales}
         onCerrar={() => setCambiandoFoto(false)}
       />
+      <CambiarContrasenaModal vm={clave} />
     </Pantalla>
   );
 };

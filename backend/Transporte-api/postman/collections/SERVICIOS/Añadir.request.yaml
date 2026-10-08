@@ -1,0 +1,94 @@
+$kind: http-request
+description: |-
+  Crea un nuevo servicio. Gestiona los servicios de transporte (viajes) asignados a un conductor y un vehículo.
+
+  ## Endpoint
+
+  `POST {{baseUrl}}/servicios`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **USUARIO › Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**.
+
+  Solo un usuario con rol **Administrador** puede usar este endpoint.
+
+  ## Request Body
+
+  | Campo | Tipo | Requerido | Descripción |
+  | --- | --- | --- | --- |
+  | `codigo_servicio` | string | No (automático) | Consecutivo `SVC-0001`, `SVC-0002`… Si no se envía, lo genera el servidor. **Único**. |
+  | `tipo_servicio` | string | No | Ej. "Regular", "Especial", "Intermunicipal". Por defecto `Regular`. |
+  | `fecha_salida` | string (date-time) | Sí | ISO 8601 con zona, ej. `2026-10-20T06:00:00-05:00`. |
+  | `fecha_llegada_estimada` | string (date-time) | Sí | ISO 8601 con zona. |
+  | `fecha_llegada_real` | string (date-time) | No | Se llena al terminar el viaje. |
+  | `numero_pasajeros` | integer | Sí | Mayor que 0. |
+  | `precio_total` | number | Sí | Valor del servicio en pesos (mayor que 0). |
+  | `distancia_estimada_km` | number | No | Distancia estimada en km. |
+  | `peajes_estimados` | number | No | Valor estimado de peajes. Por defecto `0`. |
+  | `observaciones` | string | No | Notas del servicio. |
+  | `id_conductor` | string (UUID) | Sí | ID del conductor asignado (ver **CONDUCTORES**). |
+  | `id_vehiculo` | integer | Sí | ID del vehículo asignado (ver **VEHÍCULO**). |
+  | `origen` | string | Sí | Lugar de salida en texto libre (2 a 120 caracteres). |
+  | `destino` | string | Sí | Lugar de llegada en texto libre (2 a 120 caracteres). Debe ser distinto del origen. |
+  | `id_origen` | integer \| null | No | Alternativa a `origen`: ID de un destino del catálogo (ver **DESTINO**). |
+  | `id_destino` | integer \| null | No | Alternativa a `destino`: ID de un destino del catálogo. |
+  | `id_estado` | integer | Sí | ID del estado (ver **ESTADOS_SERVICIO**; ej. `2` = Programado). |
+
+  Los campos que no estén en esta tabla se ignoran.
+
+  ## Ejemplo de Request Body
+
+  ```json
+  {
+    "tipo_servicio": "Intermunicipal",
+    "fecha_salida": "2026-10-20T06:00:00-05:00",
+    "fecha_llegada_estimada": "2026-10-20T14:30:00-05:00",
+    "numero_pasajeros": 25,
+    "precio_total": 1250000,
+    "distancia_estimada_km": 420,
+    "peajes_estimados": 68000,
+    "observaciones": "Ruta por autopista principal",
+    "id_conductor": "f38b2ffc-80a4-4f5a-91c9-bc701e7ea419",
+    "id_vehiculo": 7,
+    "origen": "Bogotá - Terminal Salitre",
+    "destino": "Medellín - Terminal del Norte",
+    "id_estado": 2
+  }
+  ```
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `201 Created` | El servicio se creó. Devuelve `{ success, message, data }` con el registro guardado. |
+  | `400 Bad Request` | Faltan campos obligatorios o algún dato no cumple el formato. El campo `detalles` indica qué campo falló y por qué. |
+  | `401 Unauthorized` | No se envió el token, o el token expiró (dura 8 horas). Vuelve a ejecutar el login. |
+  | `403 Forbidden` | El rol de la sesión no tiene permiso para esta operación. |
+  | `409 Conflict` | Ya existe un registro con ese codigo_servicio. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+url: "{{baseUrl}}/servicios"
+method: POST
+body:
+  type: json
+  content: |-
+    {
+      "tipo_servicio": "Intermunicipal",
+      "fecha_salida": "2026-10-20T06:00:00-05:00",
+      "fecha_llegada_estimada": "2026-10-20T14:30:00-05:00",
+      "numero_pasajeros": 25,
+      "precio_total": 1250000,
+      "distancia_estimada_km": 420,
+      "peajes_estimados": 68000,
+      "observaciones": "Ruta por autopista principal",
+      "id_conductor": "f38b2ffc-80a4-4f5a-91c9-bc701e7ea419",
+      "id_vehiculo": 7,
+      "origen": "Bogotá - Terminal Salitre",
+      "destino": "Medellín - Terminal del Norte",
+      "id_estado": 2
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+examples: ./.resources/Añadir.resources/examples
+order: 1000

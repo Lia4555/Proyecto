@@ -1,0 +1,103 @@
+$kind: http-request
+description: |-
+  Crea un nuevo conductor. Gestiona las fichas de los conductores. La ficha se une con la cuenta de acceso (tabla `usuario`) por el correo: `email` de la ficha = `correo` de la cuenta.
+
+  ## Endpoint
+
+  `POST {{baseUrl}}/conductor`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **USUARIO › Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**. Además, en cada petición se comprueba que la cuenta siga activa: si un administrador la desactiva, el token deja de servir al momento (`401`).
+
+  Solo un usuario con rol **Administrador** puede usar este endpoint.
+
+  ## Request Body
+
+  | Campo | Tipo | Requerido | Descripción |
+  | --- | --- | --- | --- |
+  | `nombre` | string | Sí | Solo letras y espacios, de 2 a 60 caracteres. |
+  | `apellido` | string | Sí | Solo letras y espacios, de 2 a 60 caracteres. |
+  | `tipo_documento` | string | Sí | `CC`, `CE`, `TI`, `NIT` (solo números) o `PA` (pasaporte). |
+  | `numero_documento` | string | Sí | De 5 a 15 dígitos (pasaporte: 5 a 20 letras o números). **Único**. |
+  | `email` | string (email) | Sí | Correo del conductor; debe ser el mismo de su cuenta para que pueda iniciar sesión. **Único**. |
+  | `telefono` | string | Sí | Entre 7 y 15 dígitos; admite espacios y un `+` inicial. |
+  | `fecha_nacimiento` | string (date) | No | Formato `YYYY-MM-DD`. |
+  | `direccion` | string | No | Dirección de residencia. |
+  | `licencia_conduccion` | string | No | Número de la licencia de conducción. |
+  | `categoria_licencia` | string | No | Categoría de la licencia (máximo 5 caracteres, ej. `C2`). |
+  | `fecha_expedicion_licencia` | string (date) | No | Formato `YYYY-MM-DD`. |
+  | `fecha_vencimiento_licencia` | string (date) | No | Formato `YYYY-MM-DD`. |
+  | `id_rol` | integer | Sí | ID del rol **Conductor** (ver **ROLES**; actualmente `7`). |
+
+  Los campos que no estén en esta tabla (incluida la clave `id_conductor`) se ignoran.
+
+  ## Datos delicados
+
+  Por protección de datos personales, la API **nunca devuelve completos** estos campos, tampoco al administrador:
+
+  - **No se devuelven:** `fecha_nacimiento`, `direccion` (ni `ultimo_acceso`).
+  - **Llegan enmascarados** (solo los últimos 4 caracteres, ej. `••••5678`): `numero_documento`, `licencia_conduccion`.
+
+  Sí se pueden enviar al crear: se guardan completos, solo no se leen después.
+
+  ## Ejemplo de Request Body
+
+  ```json
+  {
+    "nombre": "Carlos",
+    "apellido": "Mendoza",
+    "tipo_documento": "CC",
+    "numero_documento": "80123456",
+    "email": "carlos.mendoza@transporte.com",
+    "telefono": "3105554433",
+    "fecha_nacimiento": "1985-04-12",
+    "direccion": "Carrera 7 #45-10",
+    "licencia_conduccion": "95041280",
+    "categoria_licencia": "C3",
+    "fecha_expedicion_licencia": "2021-05-20",
+    "fecha_vencimiento_licencia": "2031-05-20",
+    "id_rol": 7
+  }
+  ```
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `201 Created` | El conductor se creó. Devuelve `{ success, message, data }` con el registro guardado. |
+  | `400 Bad Request` | Faltan campos obligatorios o algún dato no cumple el formato. El campo `detalles` indica qué campo falló y por qué. |
+  | `401 Unauthorized` | No se envió el token, o el token expiró (dura 8 horas). Vuelve a ejecutar el login. |
+  | `403 Forbidden` | El rol de la sesión no tiene permiso para esta operación. |
+  | `409 Conflict` | Ya existe un registro con ese numero_documento o email. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+
+  ## Notas
+
+  - El campo `activo` no se envía aquí: la ficha se activa al aprobar la cuenta en **USUARIO › Aprobar cuentas como admin**.
+url: "{{baseUrl}}/conductor"
+method: POST
+body:
+  type: json
+  content: |-
+    {
+      "nombre": "Carlos",
+      "apellido": "Mendoza",
+      "tipo_documento": "CC",
+      "numero_documento": "80123456",
+      "email": "carlos.mendoza@transporte.com",
+      "telefono": "3105554433",
+      "fecha_nacimiento": "1985-04-12",
+      "direccion": "Carrera 7 #45-10",
+      "licencia_conduccion": "95041280",
+      "categoria_licencia": "C3",
+      "fecha_expedicion_licencia": "2021-05-20",
+      "fecha_vencimiento_licencia": "2031-05-20",
+      "id_rol": 7
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+examples: ./.resources/Añadir.resources/examples
+order: 1000

@@ -6,6 +6,8 @@ import {
   Catalogos,
   ConductorResumen,
   CuentaAcceso,
+  ErrorValidacion,
+  ErroresCampos,
   NombreRol,
   ResumenAdmin,
   Servicio,
@@ -14,6 +16,7 @@ import {
   nombreEstado,
   vaConRetraso
 } from '../../Domain/entities';
+import { CampoRestablecer } from '../../Domain/useCases';
 
 // ============================================================
 //  VIEWMODELS DEL ADMINISTRADOR (listas y acciones).
@@ -149,7 +152,73 @@ export const useCuentasViewModel = () => {
     []
   );
 
-  return { ...lista, cuentas, visibles, pendientes, conteos, filtro, setFiltro, procesando, aviso, ejecutar };
+  // --- Restablecer contraseña (formulario en un modal, cuenta a cuenta) ---
+  const [paraRestablecer, setParaRestablecer] = useState<CuentaAcceso | null>(null);
+  const [guardandoClave, setGuardandoClave] = useState(false);
+  const [erroresClave, setErroresClave] = useState<ErroresCampos<CampoRestablecer>>({});
+  const [errorClave, setErrorClave] = useState<string | null>(null);
+
+  const abrirRestablecer = useCallback((cuenta: CuentaAcceso) => {
+    setParaRestablecer(cuenta);
+    setErroresClave({});
+    setErrorClave(null);
+  }, []);
+
+  const cerrarRestablecer = useCallback(() => setParaRestablecer(null), []);
+
+  const limpiarErrorClave = useCallback((campo: CampoRestablecer) => {
+    setErroresClave((e) => (e[campo] ? { ...e, [campo]: undefined } : e));
+  }, []);
+
+  /** true si se guardo (el modal se cierra y el aviso verde sale en la lista). */
+  const restablecer = useCallback(
+    async (contrasena: string, confirmar: string): Promise<boolean> => {
+      if (!paraRestablecer) return false;
+      setGuardandoClave(true);
+      setErroresClave({});
+      setErrorClave(null);
+      try {
+        const texto = await casosDeUso.restablecerContrasena.ejecutar(paraRestablecer, contrasena, confirmar);
+        lista.setError(null);
+        setAviso(texto);
+        setParaRestablecer(null);
+        return true;
+      } catch (e) {
+        if (e instanceof ErrorValidacion) {
+          setErroresClave(e.campos as ErroresCampos<CampoRestablecer>);
+          if (e.mensajeServidor) setErrorClave(e.mensajeServidor);
+        } else {
+          setErrorClave(mensaje(e, 'No se pudo restablecer la contraseña.'));
+        }
+        return false;
+      } finally {
+        setGuardandoClave(false);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [paraRestablecer]
+  );
+
+  return {
+    ...lista,
+    cuentas,
+    visibles,
+    pendientes,
+    conteos,
+    filtro,
+    setFiltro,
+    procesando,
+    aviso,
+    ejecutar,
+    paraRestablecer,
+    guardandoClave,
+    erroresClave,
+    errorClave,
+    abrirRestablecer,
+    cerrarRestablecer,
+    limpiarErrorClave,
+    restablecer
+  };
 };
 
 export type CuentasViewModel = ReturnType<typeof useCuentasViewModel>;

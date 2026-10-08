@@ -1,4 +1,12 @@
-import { CampoTabla, Fila, Tabla, etiquetaDeFila, referenciasDe, buscarTabla } from '../../entities';
+import {
+  CampoTabla,
+  Fila,
+  Tabla,
+  etiquetaDeFila,
+  esValorEnmascarado,
+  referenciasDe,
+  buscarTabla
+} from '../../entities';
 import { TablaRepository } from '../../repositories';
 
 // ============================================================
@@ -15,6 +23,8 @@ const RE_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 // Nombres sin numeros ni simbolos raros; se admiten tildes, ñ, apostrofo y guion.
 const RE_NOMBRE = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ'’-]+(?: [A-Za-zÁÉÍÓÚÜÑáéíóúüñ'’-]+)*$/;
 const RE_TELEFONO = /^\+?[0-9 ]{7,20}$/;
+// Como lo devuelve la API: "••••" + hasta 4 caracteres finales.
+const RE_MASCARA_INTACTA = /^•{4}[^•]{0,4}$/;
 
 export type ErroresCampo = Record<string, string>;
 
@@ -34,6 +44,16 @@ export class ValidarRegistro {
         continue;
       }
       if (vacio(valor)) continue;
+      // "••••6589" es el dato guardado, oculto por la API: no se reescribio,
+      // asi que no hay nada que validar (y tampoco se enviara).
+      if (esValorEnmascarado(valor)) {
+        // Si se escribio encima del valor oculto, el resultado no es ni el
+        // dato guardado ni uno nuevo: se pide escribirlo completo.
+        if (!RE_MASCARA_INTACTA.test(String(valor).trim())) {
+          errores[campo.name] = 'Borra el valor oculto (••••) y escribe el número completo.';
+        }
+        continue;
+      }
 
       const texto = String(valor).trim();
 
@@ -101,9 +121,14 @@ export const construirCuerpo = (tabla: Tabla, valores: Fila): Fila => {
     if (vacio(bruto)) {
       // Obligatorio vacio -> se manda vacio para que el servidor de un error
       // claro. Opcional vacio -> se omite, para no pisar la columna con "".
+      // Asi un dato oculto por la API (fecha de nacimiento, direccion) que
+      // llega vacio al editar no borra el real.
       if (campo.required) cuerpo[campo.name] = '';
       continue;
     }
+    // Valor enmascarado ("••••6589") sin tocar: no es un cambio. Se omite
+    // (el PUT es parcial) para no pisar el documento o la licencia reales.
+    if (esValorEnmascarado(bruto)) continue;
     if (campo.type === 'number') {
       cuerpo[campo.name] = Number(bruto);
     } else if (campo.type === 'datetime') {

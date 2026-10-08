@@ -1,0 +1,27 @@
+workspace:
+  id: 49f8d596-4305-4cf5-b364-88df563df76b
+cloudResources:
+  collections:
+    ../postman/collections/HISTORIAL_CONDUCTOR: 53376094-a41e1b20-4be1-460d-8f5a-90eb0b6e2bcf
+    ../postman/collections/MANTENIMIENTO: 53376094-e3bfbd73-239f-4b2e-b5ae-6cd29bac9761
+    ../postman/collections/TIPOS_DOCUMENTOS: 53376094-71402da8-b1dc-4c6b-bb68-5a7ec126b684
+    ../postman/collections/DOCUMENTOS_VEHICULOS: 53376094-63ea8605-f4bb-4b2e-9ee3-74c0231ca9bd
+    ../postman/collections/ESTADOS_SERVICIO: 53376094-ac66dd0a-3f56-40b5-ad02-a92a1c2b8716
+    ../postman/collections/DESTINO: 53376094-749f52d7-d2ac-42c3-b093-bb5bffc5912c
+    ../postman/collections/CLASE_VIAJE: 53376094-19c7b112-1dce-4f22-8da1-b9ed186fd6ce
+    ../postman/collections/RESERVAS: 53376094-197a2e53-97d6-4509-9f43-daa26e8dee27
+    ../postman/collections/SERVICIOS: 53376094-5006f8f9-d087-4695-99a8-5adb1880a235
+    ../postman/collections/TIPOS_VEHÍCULOS: 53376094-0c76e968-d481-47d5-a02d-2b1cbdbd199f
+    ../postman/collections/VEHÍCULO: 53376094-8bf1afa5-d18f-4bad-b698-6038eb5631eb
+    ../postman/collections/CLIENTE: 53376094-d4b637e3-ed6f-4b6a-9b54-463346cdd6fe
+    ../postman/collections/TIPO_DE_ALERTA: 53376094-80a6e930-728b-4c91-8481-ba69c6b7786a
+    ../postman/collections/ALERTAS: 53376094-f04fdf2f-a833-412e-bb8f-a785302580b3
+    ../postman/collections/CONDUCTORES: 53376094-736aae2d-b825-4462-a39a-aa43781b0987
+    ../postman/collections/ROLES: 53376094-cde6887f-47ba-4f34-86e8-b414590e6a5a
+    ../postman/collections/USUARIO: 53376094-4b6dc955-4f82-42d4-b9df-b08378c6be33
+  environments:
+    ../postman/environments/TransporteAPI.environment.yaml: 53376094-dc236a22-8f38-4cc7-863f-0bf78de8936d
+  globals:
+    ../postman/globals/workspace.globals.yaml: cc32ad81-b14d-4929-87e1-1d73c601d45c
+  documents:
+    ../postman/documents/WORKSPACE-README.md: c9f95f1a-73b2-4161-acc7-88b4336c5153

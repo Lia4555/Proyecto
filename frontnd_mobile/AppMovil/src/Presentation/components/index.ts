@@ -13,3 +13,4 @@ export * from './Icono';
 export * from './Marca';
 export * from './MensajeEstado';
 export * from './Pantalla';
+export * from './HojaModal';

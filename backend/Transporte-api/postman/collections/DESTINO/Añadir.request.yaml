@@ -1,0 +1,65 @@
+$kind: http-request
+description: |-
+  Crea un nuevo destino. Gestiona el catálogo de destinos (terminales, ciudades y puntos de recogida).
+
+  ## Endpoint
+
+  `POST {{baseUrl}}/destinos`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **USUARIO › Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**.
+
+  Solo un usuario con rol **Administrador** puede usar este endpoint.
+
+  ## Request Body
+
+  | Campo | Tipo | Requerido | Descripción |
+  | --- | --- | --- | --- |
+  | `nombre_destino` | string | Sí | Nombre del lugar (mínimo 2 caracteres). |
+  | `ciudad` | string | Sí | Ciudad (mínimo 2 caracteres). |
+  | `departamento` | string | No | Departamento. |
+  | `tiempo_estimado_viaje_horas` | number | No | Horas estimadas de viaje (mayor que 0, ej. `1.5`). |
+  | `activo` | boolean | No | Si el destino está disponible. Por defecto `true`. |
+
+  Los campos que no estén en esta tabla se ignoran.
+
+  ## Ejemplo de Request Body
+
+  ```json
+  {
+    "nombre_destino": "Terminal del Norte",
+    "ciudad": "Medellín",
+    "departamento": "Antioquia",
+    "tiempo_estimado_viaje_horas": 8.5,
+    "activo": true
+  }
+  ```
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `201 Created` | El destino se creó. Devuelve `{ success, message, data }` con el registro guardado. |
+  | `400 Bad Request` | Faltan campos obligatorios o algún dato no cumple el formato. El campo `detalles` indica qué campo falló y por qué. |
+  | `401 Unauthorized` | No se envió el token, o el token expiró (dura 8 horas). Vuelve a ejecutar el login. |
+  | `403 Forbidden` | El rol de la sesión no tiene permiso para esta operación. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+url: "{{baseUrl}}/destinos"
+method: POST
+body:
+  type: json
+  content: |-
+    {
+      "nombre_destino": "Terminal del Norte",
+      "ciudad": "Medellín",
+      "departamento": "Antioquia",
+      "tiempo_estimado_viaje_horas": 8.5,
+      "activo": true
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+examples: ./.resources/Añadir.resources/examples
+order: 1000

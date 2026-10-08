@@ -1,0 +1,46 @@
+$kind: http-example
+request:
+  url: "{{baseUrl}}/clases-viaje"
+  method: POST
+  body:
+    type: json
+    content: "\r
+
+      {\r
+
+      \  \"nombre_clase\": \"Económica\",\r
+
+      \  \"descripcion\": \"Asiento estándar con aire acondicionado\",\r
+
+      \  \"multiplicador_precio\": 1.00,\r
+
+      \  \"beneficios\": \"Equipaje de bodega hasta 15kg\"\r
+
+      }"
+response:
+  statusCode: 201
+  statusText: Created
+  headers:
+    X-Powered-By: Express
+    Access-Control-Allow-Origin: "*"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "237"
+    ETag: W/"ed-THdF5lIOEgFhHqWSuazpHTOSrkU"
+    Date: Fri, 19 Jun 2026 20:23:28 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: text
+    content: |-
+      {
+          "success": true,
+          "message": "Registro creado en clases_viaje",
+          "data": {
+              "id_clase": 1,
+              "nombre_clase": "Económica",
+              "descripcion": "Asiento estándar con aire acondicionado",
+              "multiplicador_precio": 1,
+              "beneficios": "Equipaje de bodega hasta 15kg"
+          }
+      }
+order: 1000

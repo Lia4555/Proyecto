@@ -1,0 +1,80 @@
+$kind: http-request
+description: |-
+  Crea un nuevo mantenimiento. Gestiona los mantenimientos realizados a los vehículos de la flota.
+
+  ## Endpoint
+
+  `POST {{baseUrl}}/mantenimientos`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **USUARIO › Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**.
+
+  Solo un usuario con rol **Administrador** puede usar este endpoint.
+
+  ## Request Body
+
+  | Campo | Tipo | Requerido | Descripción |
+  | --- | --- | --- | --- |
+  | `fecha_mantenimiento` | string (date) | Sí | Formato `YYYY-MM-DD`. |
+  | `tipo_mantenimiento` | string | Sí | Ej. "Preventivo", "Correctivo". |
+  | `descripcion` | string | No | Trabajos realizados. |
+  | `costo` | number | Sí | Costo en pesos (mayor que 0). |
+  | `taller_responsable` | string | No | Taller que hizo el trabajo. |
+  | `kilometraje_actual` | number | No | Kilometraje al momento del mantenimiento. |
+  | `proximo_mantenimiento` | string (date) | No | Fecha del próximo mantenimiento, `YYYY-MM-DD`. |
+  | `kilometraje_proximo_mantenimiento` | number | No | Kilometraje del próximo mantenimiento. |
+  | `observaciones` | string | No | Notas adicionales. |
+  | `id_vehiculo` | integer | Sí | ID del vehículo (ver **VEHÍCULO**). |
+
+  Los campos que no estén en esta tabla se ignoran.
+
+  ## Ejemplo de Request Body
+
+  ```json
+  {
+    "fecha_mantenimiento": "2026-10-01",
+    "tipo_mantenimiento": "Preventivo",
+    "descripcion": "Cambio de aceite de motor y filtros",
+    "costo": 450000,
+    "taller_responsable": "TecniCentros Diesel",
+    "kilometraje_actual": 12000,
+    "proximo_mantenimiento": "2027-04-01",
+    "kilometraje_proximo_mantenimiento": 22000,
+    "observaciones": "Vehículo en perfectas condiciones",
+    "id_vehiculo": 7
+  }
+  ```
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `201 Created` | El mantenimiento se creó. Devuelve `{ success, message, data }` con el registro guardado. |
+  | `400 Bad Request` | Faltan campos obligatorios o algún dato no cumple el formato. El campo `detalles` indica qué campo falló y por qué. |
+  | `401 Unauthorized` | No se envió el token, o el token expiró (dura 8 horas). Vuelve a ejecutar el login. |
+  | `403 Forbidden` | El rol de la sesión no tiene permiso para esta operación. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+url: "{{baseUrl}}/mantenimientos"
+method: POST
+body:
+  type: json
+  content: |-
+    {
+      "fecha_mantenimiento": "2026-10-01",
+      "tipo_mantenimiento": "Preventivo",
+      "descripcion": "Cambio de aceite de motor y filtros",
+      "costo": 450000,
+      "taller_responsable": "TecniCentros Diesel",
+      "kilometraje_actual": 12000,
+      "proximo_mantenimiento": "2027-04-01",
+      "kilometraje_proximo_mantenimiento": 22000,
+      "observaciones": "Vehículo en perfectas condiciones",
+      "id_vehiculo": 7
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+examples: ./.resources/Añadir.resources/examples
+order: 1000

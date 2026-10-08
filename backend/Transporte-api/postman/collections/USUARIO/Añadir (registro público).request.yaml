@@ -1,0 +1,67 @@
+$kind: http-request
+description: |-
+  Registro público: crea una **solicitud de cuenta** de Conductor (y su ficha en **CONDUCTORES**). La cuenta nace **desactivada** y no puede iniciar sesión hasta que un administrador la apruebe con **Aprobar cuentas como admin**.
+
+  ## Endpoint
+
+  `POST {{baseUrl}}/auth/register`
+
+  ## Autenticación
+
+  No requiere token (es público). Límite: 5 solicitudes por hora desde la misma IP.
+
+  ## Request Body
+
+  | Campo | Tipo | Requerido | Descripción |
+  | --- | --- | --- | --- |
+  | `nombre` | string | Sí | Solo letras y espacios, de 2 a 60 caracteres. |
+  | `apellido` | string | Sí | Solo letras y espacios, de 2 a 60 caracteres. |
+  | `tipo_documento` | string | Sí | `CC`, `CE` o `PA`. |
+  | `numero_documento` | string | Sí | CC/CE: 5 a 15 dígitos. PA: 5 a 20 letras o números. **Único**. |
+  | `telefono` | string | Sí | Entre 7 y 15 dígitos. |
+  | `correo` | string (email) | Sí | Correo con el que iniciará sesión. **Único**. |
+  | `contrasena` | string | Sí | De 8 a 72 caracteres. Se guarda cifrada con bcrypt. |
+
+  No se puede elegir el rol: siempre se crea como Conductor. Para crear un administrador, apruébala con `{ "rol": "Administrador" }`.
+
+  ## Ejemplo de Request Body
+
+  ```json
+  {
+    "nombre": "Andres",
+    "apellido": "Ruiz",
+    "tipo_documento": "CC",
+    "numero_documento": "1019897865",
+    "telefono": "3017788990",
+    "correo": "andres.ruiz@gmail.com",
+    "contrasena": "Conductor2026"
+  }
+  ```
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `201 Created` | Solicitud enviada; queda pendiente de aprobación. |
+  | `400 Bad Request` | Algún dato no cumple el formato (ver `detalles`). |
+  | `409 Conflict` | Ya existe una cuenta o ficha con ese correo o documento. |
+  | `429 Too Many Requests` | Demasiadas solicitudes desde la misma IP. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+url: "{{baseUrl}}/auth/register"
+method: POST
+body:
+  type: json
+  content: |-
+    {
+      "nombre": "Andres",
+      "apellido": "Ruiz",
+      "tipo_documento": "CC",
+      "numero_documento": "1019897865",
+      "telefono": "3017788990",
+      "correo": "andres.ruiz@gmail.com",
+      "contrasena": "Conductor2026"
+    }
+auth:
+  type: noauth
+examples: ./.resources/Añadir (registro público).resources/examples
+order: 2000

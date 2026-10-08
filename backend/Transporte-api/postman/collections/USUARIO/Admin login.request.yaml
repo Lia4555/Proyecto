@@ -1,0 +1,93 @@
+$kind: http-request
+description: |-
+  Inicia sesión con una cuenta de **Administrador**. Devuelve el **JWT** y lo guarda automáticamente en la variable `auth_token` del environment **TransporteAPI**; todas las demás peticiones lo envían como `Bearer {{auth_token}}`.
+
+  ## Endpoint
+
+  `POST {{baseUrl}}/auth/login`
+
+  ## Autenticación
+
+  No requiere token (es público). Selecciona el environment **TransporteAPI** antes de enviarla.
+
+  ## Headers
+
+  | Header | Valor | Descripción |
+  | --- | --- | --- |
+  | `X-Client` | `mobile` | Hace que el token venga en el JSON. Sin este header el token solo se envía en una cookie httpOnly. |
+
+  ## Request Body
+
+  | Campo | Tipo | Requerido | Descripción |
+  | --- | --- | --- | --- |
+  | `correo` | string | Sí | Correo de la cuenta (se compara exacto, distingue mayúsculas). |
+  | `contrasena` | string | Sí | Contraseña de la cuenta. |
+
+  ## Ejemplo de Request Body
+
+  ```json
+  {
+    "correo": "admin@dviaje.com",
+    "contrasena": "tu-contraseña"
+  }
+  ```
+
+  ## Ejemplo de respuesta
+
+  ```json
+  {
+    "message": "Login exitoso",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "user": {
+      "id_usuario": "uuid",
+      "nombre": "Lia",
+      "apellido": "Arcila",
+      "correo": "admin@dviaje.com",
+      "id_rol": 6,
+      "rol": "Administrador",
+      "nivel_permiso": 3,
+      "id_conductor": null
+    }
+  }
+  ```
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `200 OK` | Login correcto. El token dura **8 horas**. |
+  | `400 Bad Request` | Falta el correo o la contraseña. |
+  | `401 Unauthorized` | El correo o la contraseña son incorrectos (o la contraseña guardada no está cifrada con bcrypt). |
+  | `403 Forbidden` | La cuenta está pendiente o desactivada, no tiene un rol válido, o es un Conductor sin ficha en **CONDUCTORES**. |
+  | `429 Too Many Requests` | Más de 20 intentos en 15 minutos desde la misma IP. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+
+  ## Script (Post-response)
+
+  La pestaña **Scripts › Post-response** guarda el token con `pm.environment.set("auth_token", ...)`. En **Test Results** aparece "Token guardado en auth_token".
+url: "{{baseUrl}}/auth/login"
+method: POST
+headers:
+  X-Client: mobile
+body:
+  type: json
+  content: |-
+    {
+      "correo": "{{correo}}",
+      "contrasena": "{{contrasena}}"
+    }
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      // Guarda el JWT en el environment para que el resto de peticiones lo usen.
+      const r = pm.response.json();
+      if (pm.response.code === 200 && r.token) {
+        pm.environment.set("auth_token", r.token);
+        pm.test("Token guardado en auth_token (rol: " + r.user.rol + ")", () => {});
+      } else {
+        pm.test("Login fallido: " + (r.error || pm.response.status), () => { throw new Error(r.error || "sin token"); });
+      }
+    language: text/javascript
+order: 6000

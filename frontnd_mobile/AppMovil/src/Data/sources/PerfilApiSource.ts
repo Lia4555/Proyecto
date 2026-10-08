@@ -19,6 +19,12 @@ export class PerfilApiSource {
     return this.http.put<RespuestaFoto>('/perfil/foto', { foto });
   }
 
+  /** PUT /perfil/contrasena: la propia, conociendo la actual. */
+  async cambiarContrasena(actual: string, nueva: string): Promise<string> {
+    const r = await this.http.put<{ success: boolean; message: string }>('/perfil/contrasena', { actual, nueva });
+    return r.message;
+  }
+
   quitarFoto(): Promise<RespuestaFoto> {
     return this.http.delete<RespuestaFoto>('/perfil/foto');
   }

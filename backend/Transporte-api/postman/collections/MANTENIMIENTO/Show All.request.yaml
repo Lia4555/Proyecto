@@ -1,0 +1,71 @@
+$kind: http-request
+description: |-
+  Lista los mantenimientos realizados a los vehículos de la flota. Devuelve un arreglo JSON con todos los registros.
+
+  ## Endpoint
+
+  `GET {{baseUrl}}/mantenimientos`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **USUARIO › Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**.
+
+  ## Permisos
+
+  - **Administrador:** ve todos los registros.
+  - Un **Conductor** solo ve los mantenimientos de los vehículos que conduce y no puede modificarlos.
+
+  ## Campos de la respuesta
+
+  | Campo | Tipo | Descripción |
+  | --- | --- | --- |
+  | `id_mantenimiento` | integer | Identificador único (lo asigna la base de datos). |
+  | `fecha_mantenimiento` | string (date) | Formato `YYYY-MM-DD`. |
+  | `tipo_mantenimiento` | string | Ej. "Preventivo", "Correctivo". |
+  | `descripcion` | string | Trabajos realizados. |
+  | `costo` | number | Costo en pesos (mayor que 0). |
+  | `taller_responsable` | string | Taller que hizo el trabajo. |
+  | `kilometraje_actual` | number | Kilometraje al momento del mantenimiento. |
+  | `proximo_mantenimiento` | string (date) | Fecha del próximo mantenimiento, `YYYY-MM-DD`. |
+  | `kilometraje_proximo_mantenimiento` | number | Kilometraje del próximo mantenimiento. |
+  | `observaciones` | string | Notas adicionales. |
+  | `id_vehiculo` | integer | ID del vehículo (ver **VEHÍCULO**). |
+
+  ## Ejemplo de respuesta
+
+  ```json
+  [
+    {
+      "id_mantenimiento": 1,
+      "fecha_mantenimiento": "2026-10-01",
+      "tipo_mantenimiento": "Preventivo",
+      "descripcion": "Cambio de aceite de motor y filtros",
+      "costo": 450000,
+      "taller_responsable": "TecniCentros Diesel",
+      "kilometraje_actual": 12000,
+      "proximo_mantenimiento": "2027-04-01",
+      "kilometraje_proximo_mantenimiento": 22000,
+      "observaciones": "Vehículo en perfectas condiciones",
+      "id_vehiculo": 7
+    }
+  ]
+  ```
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `200 OK` | Arreglo con los registros (vacío `[]` si no hay ninguno). |
+  | `401 Unauthorized` | No se envió el token, o el token expiró (dura 8 horas). Vuelve a ejecutar el login. |
+  | `403 Forbidden` | El rol de la sesión no tiene permiso para esta operación. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+url: "{{baseUrl}}/mantenimientos"
+method: GET
+body:
+  type: text
+  content: ""
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+order: 2000

@@ -1,0 +1,82 @@
+$kind: http-request
+description: |-
+  Lista los servicios de transporte (viajes) asignados a un conductor y un vehículo. Devuelve un arreglo JSON con todos los registros.
+
+  ## Endpoint
+
+  `GET {{baseUrl}}/servicios`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **USUARIO › Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**.
+
+  ## Permisos
+
+  - **Administrador:** ve todos los registros.
+  - Un **Conductor** solo ve los servicios que tiene asignados y solo puede cambiar `id_estado`, `fecha_llegada_real` y `observaciones`.
+
+  ## Campos de la respuesta
+
+  | Campo | Tipo | Descripción |
+  | --- | --- | --- |
+  | `id_servicio` | integer | Identificador único (lo asigna la base de datos). |
+  | `codigo_servicio` | string | Consecutivo `SVC-0001`, `SVC-0002`… Si no se envía, lo genera el servidor. **Único**. |
+  | `tipo_servicio` | string | Ej. "Regular", "Especial", "Intermunicipal". Por defecto `Regular`. |
+  | `fecha_salida` | string (date-time) | ISO 8601 con zona, ej. `2026-10-20T06:00:00-05:00`. |
+  | `fecha_llegada_estimada` | string (date-time) | ISO 8601 con zona. |
+  | `fecha_llegada_real` | string (date-time) | Se llena al terminar el viaje. |
+  | `numero_pasajeros` | integer | Mayor que 0. |
+  | `precio_total` | number | Valor del servicio en pesos (mayor que 0). |
+  | `distancia_estimada_km` | number | Distancia estimada en km. |
+  | `peajes_estimados` | number | Valor estimado de peajes. Por defecto `0`. |
+  | `observaciones` | string | Notas del servicio. |
+  | `id_conductor` | string (UUID) | ID del conductor asignado (ver **CONDUCTORES**). |
+  | `id_vehiculo` | integer | ID del vehículo asignado (ver **VEHÍCULO**). |
+  | `origen` | string | Lugar de salida en texto libre (2 a 120 caracteres). |
+  | `destino` | string | Lugar de llegada en texto libre (2 a 120 caracteres). Debe ser distinto del origen. |
+  | `id_origen` | integer \| null | Alternativa a `origen`: ID de un destino del catálogo (ver **DESTINO**). |
+  | `id_destino` | integer \| null | Alternativa a `destino`: ID de un destino del catálogo. |
+  | `id_estado` | integer | ID del estado (ver **ESTADOS_SERVICIO**; ej. `2` = Programado). |
+
+  ## Ejemplo de respuesta
+
+  ```json
+  [
+    {
+      "id_servicio": 1,
+      "tipo_servicio": "Intermunicipal",
+      "fecha_salida": "2026-10-20T06:00:00-05:00",
+      "fecha_llegada_estimada": "2026-10-20T14:30:00-05:00",
+      "numero_pasajeros": 25,
+      "precio_total": 1250000,
+      "distancia_estimada_km": 420,
+      "peajes_estimados": 68000,
+      "observaciones": "Ruta por autopista principal",
+      "id_conductor": "f38b2ffc-80a4-4f5a-91c9-bc701e7ea419",
+      "id_vehiculo": 7,
+      "origen": "Bogotá - Terminal Salitre",
+      "destino": "Medellín - Terminal del Norte",
+      "id_estado": 2,
+      "codigo_servicio": "SVC-0001"
+    }
+  ]
+  ```
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `200 OK` | Arreglo con los registros (vacío `[]` si no hay ninguno). |
+  | `401 Unauthorized` | No se envió el token, o el token expiró (dura 8 horas). Vuelve a ejecutar el login. |
+  | `403 Forbidden` | El rol de la sesión no tiene permiso para esta operación. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+url: "{{baseUrl}}/servicios"
+method: GET
+body:
+  type: text
+  content: ""
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+order: 2000

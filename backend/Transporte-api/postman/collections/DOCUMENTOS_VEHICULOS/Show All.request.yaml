@@ -1,0 +1,73 @@
+$kind: http-request
+description: |-
+  Lista los documentos legales de cada vehículo (SOAT, tecnomecánica, tarjeta de operación…). Devuelve un arreglo JSON con todos los registros.
+
+  ## Endpoint
+
+  `GET {{baseUrl}}/documentos-vehiculo`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **USUARIO › Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**.
+
+  ## Permisos
+
+  - **Administrador:** ve todos los registros.
+  - Un **Conductor** solo ve los documentos de los vehículos que conduce y no puede modificarlos.
+
+  ## Campos de la respuesta
+
+  | Campo | Tipo | Descripción |
+  | --- | --- | --- |
+  | `id_documento` | integer | Identificador único (lo asigna la base de datos). |
+  | `numero_documento` | string | Número del documento. **Único**. |
+  | `tipo_documento_legal` | string | Nombre legal del documento (ej. "SOAT"). |
+  | `fecha_expedicion` | string (date) | Formato `YYYY-MM-DD`. |
+  | `fecha_vencimiento` | string (date) | Formato `YYYY-MM-DD`. |
+  | `aseguradora` | string | Entidad que lo expide. |
+  | `valor_asegurado` | number | Valor asegurado en pesos. |
+  | `archivo_url` | string (URL) | Enlace al archivo digitalizado. |
+  | `estado_vigente` | boolean | Si el documento está vigente. Por defecto `true`. |
+  | `observaciones` | string | Notas adicionales. |
+  | `id_vehiculo` | integer | ID del vehículo (ver **VEHÍCULO**). |
+  | `id_tipo_documento` | integer | ID del tipo de documento (ver **TIPOS_DOCUMENTOS**). |
+
+  ## Ejemplo de respuesta
+
+  ```json
+  [
+    {
+      "id_documento": 1,
+      "numero_documento": "SOAT-2026-XYZ",
+      "tipo_documento_legal": "SOAT",
+      "fecha_expedicion": "2026-01-01",
+      "fecha_vencimiento": "2027-01-01",
+      "aseguradora": "Seguros Alfa",
+      "valor_asegurado": 60000000,
+      "archivo_url": "https://storage.supabase.com/soat1.pdf",
+      "estado_vigente": true,
+      "observaciones": "Revisado por administración",
+      "id_vehiculo": 7,
+      "id_tipo_documento": 1
+    }
+  ]
+  ```
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `200 OK` | Arreglo con los registros (vacío `[]` si no hay ninguno). |
+  | `401 Unauthorized` | No se envió el token, o el token expiró (dura 8 horas). Vuelve a ejecutar el login. |
+  | `403 Forbidden` | El rol de la sesión no tiene permiso para esta operación. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+url: "{{baseUrl}}/documentos-vehiculo"
+method: GET
+body:
+  type: text
+  content: ""
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+order: 2000

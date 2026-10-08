@@ -16,6 +16,8 @@ import {
   ListarConductores,
   ListarCuentas,
   ListarServicios,
+  CambiarContrasena,
+  RestablecerContrasena,
   GuardarFotoPerfil,
   ObtenerFotoPerfil,
   ObtenerResumenAdmin,
@@ -79,10 +81,11 @@ export const casosDeUso = {
   listarAlertas: new ListarAlertas(alertaRepository),
   cargarCatalogos: new CargarCatalogos(catalogoRepository),
 
-  // --- Foto de perfil (cualquier rol, siempre la propia) ---
+  // --- Mi perfil: foto y contraseña (cualquier rol, siempre la propia) ---
   obtenerFotoPerfil: new ObtenerFotoPerfil(perfilRepository),
   guardarFotoPerfil: new GuardarFotoPerfil(perfilRepository),
   quitarFotoPerfil: new QuitarFotoPerfil(perfilRepository),
+  cambiarContrasena: new CambiarContrasena(perfilRepository),
 
   // --- Administrador ---
   obtenerResumenAdmin: new ObtenerResumenAdmin(
@@ -94,6 +97,7 @@ export const casosDeUso = {
   ),
   listarCuentas: new ListarCuentas(adminRepository),
   gestionarCuenta: new GestionarCuenta(adminRepository),
+  restablecerContrasena: new RestablecerContrasena(adminRepository),
   listarConductores: new ListarConductores(adminRepository),
   crearServicio: new CrearServicio(servicioRepository),
   editarServicio: new EditarServicio(servicioRepository),
@@ -117,3 +121,11 @@ export type CasosDeUso = typeof casosDeUso;
 
 /** Acceso a la galeria y a la camara del telefono. */
 export const selectorImagen = new SelectorImagen();
+
+/**
+ * Avisa cuando el servidor da por perdida la sesion (401 con token:
+ * caducada, revocada o cuenta desactivada). Lo escucha el ViewModel de
+ * sesion para volver al login con el mensaje del servidor.
+ */
+export const escucharSesionPerdida = (oyente: (mensaje: string) => void): (() => void) =>
+  httpClient.escucharSesionPerdida(oyente);

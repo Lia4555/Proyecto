@@ -43,6 +43,12 @@ export interface CampoTabla {
   options?: string[];
   /** Valor inicial de un checkbox al crear. */
   porDefecto?: boolean;
+  /**
+   * Dato delicado que la API no devuelve completo (middleware/datosSensibles.js):
+   *   'enmascarado' -> llega como "••••6589"; solo se envia si se reescribe.
+   *   'oculto'      -> no llega nunca; vacio al editar = conservar el guardado.
+   */
+  privado?: 'enmascarado' | 'oculto';
 }
 
 export type Fila = Record<string, any>;
@@ -187,12 +193,12 @@ export const TABLAS: Tabla[] = [
       { name: 'nombre', label: 'Nombre', type: 'text', required: true, format: 'nombre' },
       { name: 'apellido', label: 'Apellido', type: 'text', required: true, format: 'nombre' },
       { name: 'tipo_documento', label: 'Tipo de documento', type: 'select', required: true, options: DOCUMENTOS },
-      { name: 'numero_documento', label: 'Número de documento', type: 'text', required: true },
+      { name: 'numero_documento', label: 'Número de documento', type: 'text', required: true, privado: 'enmascarado' },
       { name: 'email', label: 'Email', type: 'email', required: true },
       { name: 'telefono', label: 'Teléfono', type: 'text', required: true, format: 'telefono' },
-      { name: 'fecha_nacimiento', label: 'Fecha de nacimiento', type: 'date' },
-      { name: 'direccion', label: 'Dirección', type: 'text' },
-      { name: 'licencia_conduccion', label: 'Licencia de conducción', type: 'text' },
+      { name: 'fecha_nacimiento', label: 'Fecha de nacimiento', type: 'date', privado: 'oculto' },
+      { name: 'direccion', label: 'Dirección', type: 'text', privado: 'oculto' },
+      { name: 'licencia_conduccion', label: 'Licencia de conducción', type: 'text', privado: 'enmascarado' },
       { name: 'categoria_licencia', label: 'Categoría de licencia', type: 'select', options: LICENCIAS },
       { name: 'fecha_expedicion_licencia', label: 'Expedición licencia', type: 'date' },
       { name: 'fecha_vencimiento_licencia', label: 'Vencimiento licencia', type: 'date', after: 'fecha_expedicion_licencia' },
@@ -212,11 +218,11 @@ export const TABLAS: Tabla[] = [
       { name: 'nombre', label: 'Nombre', type: 'text', required: true, format: 'nombre' },
       { name: 'apellido', label: 'Apellido', type: 'text', required: true, format: 'nombre' },
       { name: 'tipo_documento', label: 'Tipo de documento', type: 'select', required: true, options: DOCUMENTOS },
-      { name: 'numero_documento', label: 'Número de documento', type: 'text', required: true },
+      { name: 'numero_documento', label: 'Número de documento', type: 'text', required: true, privado: 'enmascarado' },
       { name: 'email', label: 'Email', type: 'email', required: true },
       { name: 'telefono', label: 'Teléfono', type: 'text', format: 'telefono' },
-      { name: 'fecha_nacimiento', label: 'Fecha de nacimiento', type: 'date' },
-      { name: 'direccion', label: 'Dirección', type: 'text' }
+      { name: 'fecha_nacimiento', label: 'Fecha de nacimiento', type: 'date', privado: 'oculto' },
+      { name: 'direccion', label: 'Dirección', type: 'text', privado: 'oculto' }
     ]
   },
 
