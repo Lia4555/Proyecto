@@ -1,0 +1,47 @@
+$kind: http-example
+request:
+  url: "{{baseUrl}}/destinos"
+  method: POST
+  body:
+    type: json
+    content: "{\r
+
+      \  \"nombre_destino\": \"Terminal del Norte\",\r
+
+      \  \"ciudad\": \"Medellín\",\r
+
+      \  \"departamento\": \"Antioquia\",\r
+
+      \  \"tiempo_estimado_viaje_horas\": 8.5,\r
+
+      \  \"activo\": true\r
+
+      }"
+response:
+  statusCode: 201
+  statusText: Created
+  headers:
+    X-Powered-By: Express
+    Access-Control-Allow-Origin: "*"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "214"
+    ETag: W/"d6-F3KOwOHhlSMWIjtIykLRwKgRXEw"
+    Date: Fri, 19 Jun 2026 20:22:58 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: text
+    content: |-
+      {
+          "success": true,
+          "message": "Registro creado en destinos",
+          "data": {
+              "id_destino": 1,
+              "nombre_destino": "Terminal del Norte",
+              "ciudad": "Medellín",
+              "departamento": "Antioquia",
+              "tiempo_estimado_viaje_horas": 8.5,
+              "activo": true
+          }
+      }
+order: 1000

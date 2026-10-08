@@ -1,0 +1,84 @@
+$kind: http-request
+description: |-
+  Crea un nuevo documento de vehículo. Gestiona los documentos legales de cada vehículo (SOAT, tecnomecánica, tarjeta de operación…).
+
+  ## Endpoint
+
+  `POST {{baseUrl}}/documentos-vehiculo`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **USUARIO › Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**.
+
+  Solo un usuario con rol **Administrador** puede usar este endpoint.
+
+  ## Request Body
+
+  | Campo | Tipo | Requerido | Descripción |
+  | --- | --- | --- | --- |
+  | `numero_documento` | string | Sí | Número del documento. **Único**. |
+  | `tipo_documento_legal` | string | Sí | Nombre legal del documento (ej. "SOAT"). |
+  | `fecha_expedicion` | string (date) | Sí | Formato `YYYY-MM-DD`. |
+  | `fecha_vencimiento` | string (date) | Sí | Formato `YYYY-MM-DD`. |
+  | `aseguradora` | string | No | Entidad que lo expide. |
+  | `valor_asegurado` | number | No | Valor asegurado en pesos. |
+  | `archivo_url` | string (URL) | No | Enlace al archivo digitalizado. |
+  | `estado_vigente` | boolean | No | Si el documento está vigente. Por defecto `true`. |
+  | `observaciones` | string | No | Notas adicionales. |
+  | `id_vehiculo` | integer | Sí | ID del vehículo (ver **VEHÍCULO**). |
+  | `id_tipo_documento` | integer | Sí | ID del tipo de documento (ver **TIPOS_DOCUMENTOS**). |
+
+  Los campos que no estén en esta tabla se ignoran.
+
+  ## Ejemplo de Request Body
+
+  ```json
+  {
+    "numero_documento": "SOAT-2026-XYZ",
+    "tipo_documento_legal": "SOAT",
+    "fecha_expedicion": "2026-01-01",
+    "fecha_vencimiento": "2027-01-01",
+    "aseguradora": "Seguros Alfa",
+    "valor_asegurado": 60000000,
+    "archivo_url": "https://storage.supabase.com/soat1.pdf",
+    "estado_vigente": true,
+    "observaciones": "Revisado por administración",
+    "id_vehiculo": 7,
+    "id_tipo_documento": 1
+  }
+  ```
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `201 Created` | El documento de vehículo se creó. Devuelve `{ success, message, data }` con el registro guardado. |
+  | `400 Bad Request` | Faltan campos obligatorios o algún dato no cumple el formato. El campo `detalles` indica qué campo falló y por qué. |
+  | `401 Unauthorized` | No se envió el token, o el token expiró (dura 8 horas). Vuelve a ejecutar el login. |
+  | `403 Forbidden` | El rol de la sesión no tiene permiso para esta operación. |
+  | `409 Conflict` | Ya existe un registro con ese numero_documento. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+url: "{{baseUrl}}/documentos-vehiculo"
+method: POST
+body:
+  type: json
+  content: |-
+    {
+      "numero_documento": "SOAT-2026-XYZ",
+      "tipo_documento_legal": "SOAT",
+      "fecha_expedicion": "2026-01-01",
+      "fecha_vencimiento": "2027-01-01",
+      "aseguradora": "Seguros Alfa",
+      "valor_asegurado": 60000000,
+      "archivo_url": "https://storage.supabase.com/soat1.pdf",
+      "estado_vigente": true,
+      "observaciones": "Revisado por administración",
+      "id_vehiculo": 7,
+      "id_tipo_documento": 1
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+examples: ./.resources/Añadir.resources/examples
+order: 1000

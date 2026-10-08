@@ -1,0 +1,57 @@
+$kind: http-request
+description: |-
+  Elimina el conductor indicado por su `id_conductor` de forma permanente.
+
+  ## Endpoint
+
+  `DELETE {{baseUrl}}/conductor/:id`
+
+  Ejemplo: `DELETE {{baseUrl}}/conductor/f89efec8-fb28-42ce-a2ce-13c88048292e`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **USUARIO › Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**. Además, en cada petición se comprueba que la cuenta siga activa: si un administrador la desactiva, el token deja de servir al momento (`401`).
+
+  Solo un usuario con rol **Administrador** puede usar este endpoint.
+
+  ## Parámetros de ruta
+
+  | Parámetro | Tipo | Requerido | Descripción |
+  | --- | --- | --- | --- |
+  | `id` | string (UUID) | Sí | `id_conductor` del registro a eliminar. |
+
+  No lleva body.
+
+  ## Respuesta exitosa
+
+  ```json
+  {
+    "success": true,
+    "message": "Registro eliminado exitosamente"
+  }
+  ```
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `200 OK` | Eliminado. Ojo: también responde `200` si el `id` no existía. |
+  | `400 Bad Request` | Otros registros dependen de este (llave foránea), así que no se puede borrar. |
+  | `401 Unauthorized` | No se envió el token, o el token expiró (dura 8 horas). Vuelve a ejecutar el login. |
+  | `403 Forbidden` | El rol de la sesión no tiene permiso para esta operación. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+
+  ## Notas
+
+  - Esta operación es **irreversible**.
+  - Revisa el `id` de la URL antes de enviar: apunta a un registro real.
+url: "{{baseUrl}}/conductor/f89efec8-fb28-42ce-a2ce-13c88048292e"
+method: DELETE
+body:
+  type: text
+  content: ""
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+order: 4000

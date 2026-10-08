@@ -1,0 +1,67 @@
+$kind: http-request
+description: |-
+  Actualiza el registro de historial indicado por su `id_historial`. Es una **actualización parcial**: solo se envían los campos que se quieren cambiar.
+
+  ## Endpoint
+
+  `PUT {{baseUrl}}/historial-conductores/:id`
+
+  Ejemplo: `PUT {{baseUrl}}/historial-conductores/2`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **USUARIO › Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**.
+
+  Solo un usuario con rol **Administrador** puede usar este endpoint.
+
+  ## Parámetros de ruta
+
+  | Parámetro | Tipo | Requerido | Descripción |
+  | --- | --- | --- | --- |
+  | `id` | integer | Sí | `id_historial` del registro a actualizar. |
+
+  ## Request Body
+
+  Cualquiera de estos campos (todos opcionales), con las mismas reglas que al crear:
+
+  | Campo | Tipo | Descripción |
+  | --- | --- | --- |
+  | `id_vehiculo` | integer | ID del vehículo (ver **VEHÍCULO**). |
+  | `id_conductor` | string (UUID) | ID del conductor (ver **CONDUCTORES**). |
+  | `fecha_asignacion` | string (date) | Formato `YYYY-MM-DD`. |
+  | `fecha_desasignacion` | string (date) \| null | Formato `YYYY-MM-DD`; `null` si sigue asignado. |
+  | `observaciones` | string | Notas de la entrega del vehículo. |
+
+  ## Ejemplo de Request Body
+
+  ```json
+  {
+    "fecha_desasignacion": "2026-10-31",
+    "observaciones": "Se devuelve el vehículo con kit de carretera completo."
+  }
+  ```
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `200 OK` | Registro actualizado. Devuelve `{ success, data }` con el registro completo. |
+  | `400 Bad Request` | No se envió ningún campo válido, o algún dato no cumple el formato (ver `detalles`). |
+  | `401 Unauthorized` | No se envió el token, o el token expiró (dura 8 horas). Vuelve a ejecutar el login. |
+  | `403 Forbidden` | El rol de la sesión no tiene permiso para esta operación. |
+  | `404 Not Found` | No existe un registro de historial con ese `id`. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+url: "{{baseUrl}}/historial-conductores/2"
+method: PUT
+body:
+  type: json
+  content: |-
+    {
+      "fecha_desasignacion": "2026-10-31",
+      "observaciones": "Se devuelve el vehículo con kit de carretera completo."
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+order: 3000

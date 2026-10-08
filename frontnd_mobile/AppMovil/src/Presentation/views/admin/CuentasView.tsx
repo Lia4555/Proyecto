@@ -16,6 +16,7 @@ import {
 import { CuentasViewModel, FiltroCuentas } from '../../hooks';
 import { AccionCuenta, CuentaAcceso, EstadoCuenta } from '../../../Domain/entities';
 import { colors, formatearFecha, spacing, Tono, TONOS, typography } from '../../theme';
+import { RestablecerContrasenaModal } from './RestablecerContrasenaModal';
 
 const nombre = (c: CuentaAcceso) => [c.nombre, c.apellido].filter(Boolean).join(' ') || c.correo;
 
@@ -77,7 +78,8 @@ export const CuentasView = ({ vm }: { vm: CuentasViewModel }) => {
         <RejillaDatos>
           <Dato rotulo="Rol" valor={c.rol ?? '—'} />
           <Dato rotulo="Registro" valor={formatearFecha(c.fecha_registro)} />
-          <Dato rotulo="Documento" valor={c.numero_documento ? `${c.tipo_documento} ${c.numero_documento}` : '—'} />
+          {/* El numero llega enmascarado ("••••6589"): basta para reconocerlo. */}
+          <Dato rotulo="Documento" valor={c.numero_documento ? [c.tipo_documento, c.numero_documento].filter(Boolean).join(' ') : '—'} />
           <Dato rotulo="Teléfono" valor={c.telefono ?? '—'} />
         </RejillaDatos>
 
@@ -122,6 +124,19 @@ export const CuentasView = ({ vm }: { vm: CuentasViewModel }) => {
         )}
         {c.estado === 'desactivada' && (
           <AppButton titulo="Reactivar" icono="actualizar" pequeno cargando={ocupada} onPress={() => vm.ejecutar(c, 'aprobar')} />
+        )}
+        {/* Unica forma de recuperar el acceso: el administrador pone una
+            contraseña temporal. La propia se cambia en «Mi perfil». Una
+            solicitud pendiente aun no lo necesita: no ha podido entrar. */}
+        {c.estado !== 'pendiente' && !c.es_tu_cuenta && (
+          <AppButton
+            titulo="Restablecer contraseña"
+            icono="llave"
+            variante="ghost"
+            pequeno
+            deshabilitado={ocupada}
+            onPress={() => vm.abrirRestablecer(c)}
+          />
         )}
       </AppCard>
     );
@@ -170,6 +185,8 @@ export const CuentasView = ({ vm }: { vm: CuentasViewModel }) => {
           }
         />
       )}
+
+      <RestablecerContrasenaModal vm={vm} />
     </Pantalla>
   );
 };

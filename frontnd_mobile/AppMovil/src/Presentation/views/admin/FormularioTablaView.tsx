@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { AppButton, AppInput, AvisoError, Icono, Selector } from '../../components';
-import { CampoTabla, Fila } from '../../../Domain/entities';
+import { AYUDA_ENMASCARADO, CampoTabla, Fila } from '../../../Domain/entities';
 import { TablaViewModel } from '../../hooks/useTablaViewModel';
 import { colors, spacing, typography } from '../../theme';
 
@@ -27,7 +27,12 @@ const tecladoDe = (campo: CampoTabla) => {
   return 'default' as const;
 };
 
-const ayudaDe = (campo: CampoTabla): string | undefined => {
+const ayudaDe = (campo: CampoTabla, esEdicion: boolean): string | undefined => {
+  // Datos delicados: la API no los devuelve completos (o no los devuelve).
+  if (esEdicion && campo.privado === 'enmascarado') return AYUDA_ENMASCARADO;
+  if (esEdicion && campo.privado === 'oculto') {
+    return 'Oculto por seguridad. Déjalo vacío para conservar el dato guardado.';
+  }
   if (campo.hint) return campo.hint;
   if (campo.type === 'date') return 'Formato: AAAA-MM-DD';
   if (campo.type === 'datetime') return 'Formato: AAAA-MM-DDTHH:MM';
@@ -130,7 +135,7 @@ export const FormularioTablaView = ({ vm, fila, onCerrar }: Props) => {
         multilinea={campo.type === 'textarea'}
         tipoTeclado={tecladoDe(campo)}
         error={error}
-        ayuda={ayudaDe(campo)}
+        ayuda={ayudaDe(campo, esEdicion)}
         autoComplete="off"
       />
     );

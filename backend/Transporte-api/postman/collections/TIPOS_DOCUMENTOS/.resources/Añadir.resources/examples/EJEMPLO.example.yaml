@@ -1,0 +1,38 @@
+$kind: http-example
+request:
+  url: "{{baseUrl}}/tipos-documentos"
+  method: POST
+  body:
+    type: json
+    content: "{\r
+
+      \  \"nombre_tipo\": \"Tarjeta de Operación Intermunicipal\",\r
+
+      \  \"vigencia_meses\": 12\r
+
+      }"
+response:
+  statusCode: 201
+  statusText: Created
+  headers:
+    X-Powered-By: Express
+    Access-Control-Allow-Origin: "*"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "168"
+    ETag: W/"a8-A+j/3MLlu7ofxJvF7Gc0S9TPfJk"
+    Date: Fri, 19 Jun 2026 20:21:29 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: text
+    content: |-
+      {
+          "success": true,
+          "message": "Registro creado en tipos_documentos",
+          "data": {
+              "id_tipo_documento": 1,
+              "nombre_tipo": "Tarjeta de Operación Intermunicipal",
+              "vigencia_meses": 12
+          }
+      }
+order: 1000

@@ -1,0 +1,59 @@
+$kind: http-request
+description: |-
+  Lista las clases de viaje (Económica, Estándar, Premium…) que se asignan a las reservas. Devuelve un arreglo JSON con todos los registros.
+
+  ## Endpoint
+
+  `GET {{baseUrl}}/clases-viaje`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **USUARIO › Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**.
+
+  ## Permisos
+
+  - **Administrador:** ve todos los registros.
+  - **Conductor:** no tiene acceso a esta tabla (`403`).
+
+  ## Campos de la respuesta
+
+  | Campo | Tipo | Descripción |
+  | --- | --- | --- |
+  | `id_clase` | integer | Identificador único (lo asigna la base de datos). |
+  | `nombre_clase` | string | Nombre de la clase (mínimo 2 caracteres). **Único**: no se puede repetir. |
+  | `descripcion` | string | Descripción breve de la clase. |
+  | `multiplicador_precio` | number | Factor que se aplica al precio base. Por defecto `1.00`. |
+  | `beneficios` | string | Beneficios incluidos en la clase. |
+
+  ## Ejemplo de respuesta
+
+  ```json
+  [
+    {
+      "id_clase": 1,
+      "nombre_clase": "Ejecutiva Plus",
+      "descripcion": "Silla reclinable con apoya piernas",
+      "multiplicador_precio": 1.8,
+      "beneficios": "Wifi, snack y equipaje de bodega hasta 25 kg"
+    }
+  ]
+  ```
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `200 OK` | Arreglo con los registros (vacío `[]` si no hay ninguno). |
+  | `401 Unauthorized` | No se envió el token, o el token expiró (dura 8 horas). Vuelve a ejecutar el login. |
+  | `403 Forbidden` | El rol de la sesión no tiene permiso para esta operación. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+url: "{{baseUrl}}/clases-viaje"
+method: GET
+body:
+  type: text
+  content: ""
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+order: 2000

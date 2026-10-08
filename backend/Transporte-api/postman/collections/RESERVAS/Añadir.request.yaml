@@ -1,0 +1,73 @@
+$kind: http-request
+description: |-
+  Crea una nueva reserva. Gestiona las reservas de los clientes.
+
+  ## Endpoint
+
+  `POST {{baseUrl}}/reservas`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **USUARIO › Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**.
+
+  Solo un usuario con rol **Administrador** puede usar este endpoint.
+
+  ## Request Body
+
+  | Campo | Tipo | Requerido | Descripción |
+  | --- | --- | --- | --- |
+  | `numero_reserva` | string | No (automático) | Consecutivo `RES-0001`, `RES-0002`… Si no se envía, lo genera el servidor. **Único**. |
+  | `asiento_asignado` | string | No | Asiento (máximo 10 caracteres, ej. `B12`). |
+  | `clase_viaje` | integer | Sí | ID de la clase de viaje (ver **CLASE_VIAJE**). |
+  | `precio_pagado` | number | Sí | Valor pagado en pesos (mayor que 0). |
+  | `estado_reserva` | string | No | Ej. "Confirmada", "Por confirmar", "Cancelada". Por defecto `Confirmada`. |
+  | `fecha_check_in` | string (date-time) | No | Fecha y hora ISO 8601 con zona, ej. `2026-10-25T06:00:00-05:00`. |
+  | `id_servicio` | integer \| null | No | ID del servicio (ver **SERVICIOS**). Una reserva puede no tener servicio todavía. |
+  | `id_cliente` | string (UUID) | Sí | ID del cliente (ver **CLIENTE**). |
+
+  Los campos que no estén en esta tabla se ignoran.
+
+  ## Ejemplo de Request Body
+
+  ```json
+  {
+    "asiento_asignado": "B12",
+    "clase_viaje": 1,
+    "precio_pagado": 85000,
+    "estado_reserva": "Confirmada",
+    "fecha_check_in": "2026-10-25T06:00:00-05:00",
+    "id_servicio": 2,
+    "id_cliente": "e0b89bcb-adba-4ed0-b600-860c7bdcfd55"
+  }
+  ```
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `201 Created` | La reserva se creó. Devuelve `{ success, message, data }` con el registro guardado. |
+  | `400 Bad Request` | Faltan campos obligatorios o algún dato no cumple el formato. El campo `detalles` indica qué campo falló y por qué. |
+  | `401 Unauthorized` | No se envió el token, o el token expiró (dura 8 horas). Vuelve a ejecutar el login. |
+  | `403 Forbidden` | El rol de la sesión no tiene permiso para esta operación. |
+  | `409 Conflict` | Ya existe un registro con ese numero_reserva. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+url: "{{baseUrl}}/reservas"
+method: POST
+body:
+  type: json
+  content: |-
+    {
+      "asiento_asignado": "B12",
+      "clase_viaje": 1,
+      "precio_pagado": 85000,
+      "estado_reserva": "Confirmada",
+      "fecha_check_in": "2026-10-25T06:00:00-05:00",
+      "id_servicio": 2,
+      "id_cliente": "e0b89bcb-adba-4ed0-b600-860c7bdcfd55"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+examples: ./.resources/Añadir.resources/examples
+order: 1000

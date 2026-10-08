@@ -1,0 +1,57 @@
+$kind: http-request
+description: |-
+  Crea un nuevo estado de servicio. Gestiona el catálogo de estados de un servicio (Pendiente, Programado, En curso, Finalizado…).
+
+  ## Endpoint
+
+  `POST {{baseUrl}}/estados-servicio`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **USUARIO › Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**.
+
+  Solo un usuario con rol **Administrador** puede usar este endpoint.
+
+  ## Request Body
+
+  | Campo | Tipo | Requerido | Descripción |
+  | --- | --- | --- | --- |
+  | `nombre_estado` | string | Sí | Nombre del estado (mínimo 2 caracteres). **Único**. |
+  | `descripcion` | string | No | Qué significa el estado. |
+
+  Los campos que no estén en esta tabla se ignoran.
+
+  ## Ejemplo de Request Body
+
+  ```json
+  {
+    "nombre_estado": "En espera de pasajeros",
+    "descripcion": "El vehículo está en el punto de salida esperando a los pasajeros."
+  }
+  ```
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `201 Created` | El estado de servicio se creó. Devuelve `{ success, message, data }` con el registro guardado. |
+  | `400 Bad Request` | Faltan campos obligatorios o algún dato no cumple el formato. El campo `detalles` indica qué campo falló y por qué. |
+  | `401 Unauthorized` | No se envió el token, o el token expiró (dura 8 horas). Vuelve a ejecutar el login. |
+  | `403 Forbidden` | El rol de la sesión no tiene permiso para esta operación. |
+  | `409 Conflict` | Ya existe un registro con ese nombre_estado. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+url: "{{baseUrl}}/estados-servicio"
+method: POST
+body:
+  type: json
+  content: |-
+    {
+      "nombre_estado": "En espera de pasajeros",
+      "descripcion": "El vehículo está en el punto de salida esperando a los pasajeros."
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+examples: ./.resources/Añadir.resources/examples
+order: 1000

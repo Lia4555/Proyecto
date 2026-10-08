@@ -1,0 +1,45 @@
+$kind: http-request
+description: |-
+  Desactiva una cuenta activa: deja de poder iniciar sesión. Si es un conductor, su ficha también queda inactiva.
+
+  ## Endpoint
+
+  `PATCH {{baseUrl}}/cuentas/:id/desactivar`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **USUARIO › Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**. Además, en cada petición se comprueba que la cuenta siga activa: si un administrador la desactiva, el token deja de servir al momento (`401`).
+
+  Solo un usuario con rol **Administrador** puede usar este endpoint.
+
+  ## Parámetros de ruta
+
+  Parámetro `id`: `id_usuario` (UUID) de la cuenta. Se toma de **Show All (listar cuentas)** y se pone en la variable `id_cuenta` del environment, o se pega directamente en la URL.
+
+  No lleva body.
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `200 OK` | `{ success: true, message: "Cuenta x@y.com desactivada." }` |
+  | `400 Bad Request` | La cuenta ya estaba inactiva, es tu propia cuenta, o es el último administrador activo. |
+  | `401 Unauthorized` | No se envió el token, o el token expiró (dura 8 horas). Vuelve a ejecutar el login. |
+  | `403 Forbidden` | El rol de la sesión no tiene permiso para esta operación. |
+  | `404 Not Found` | No existe una cuenta con ese `id`. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+
+  ## Notas
+
+  - Las sesiones que esa cuenta tenga abiertas dejan de servir **al momento**: su siguiente petición recibe `401` ("Tu cuenta ya no está activa…").
+  - Para reactivarla usa **Aprobar cuentas como admin**.
+url: "{{baseUrl}}/cuentas/{{id_cuenta}}/desactivar"
+method: PATCH
+body:
+  type: text
+  content: ""
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+order: 3000

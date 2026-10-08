@@ -133,4 +133,13 @@ export class TransporteApiSource {
     // El servidor avisa si un conductor quedo sin ficha: sin ella no puede entrar.
     return r.advertencia ? `${r.message} ${r.advertencia}` : r.message;
   }
+
+  /** PATCH /cuentas/:id/contrasena: contraseña temporal puesta por el administrador. */
+  async restablecerContrasena(idUsuario: string, contrasena: string): Promise<string> {
+    const r = await this.http.patch<{ success: boolean; message: string }>(
+      `/cuentas/${idUsuario}/contrasena`,
+      { contrasena }
+    );
+    return r.message;
+  }
 }

@@ -1,0 +1,66 @@
+$kind: http-example
+request:
+  url: "{{baseUrl}}/documentos-vehiculo"
+  method: POST
+  body:
+    type: json
+    content: "{\r
+
+      \  \"numero_documento\": \"SOAT-2026-XYZ\",\r
+
+      \  \"tipo_documento_legal\": \"Seguro Obligatorio Accidentes\",\r
+
+      \  \"fecha_expedicion\": \"2026-01-01\",\r
+
+      \  \"fecha_vencimiento\": \"2027-01-01\",\r
+
+      \  \"aseguradora\": \"Seguros Alfa\",\r
+
+      \  \"valor_asegurado\": 60000000,\r
+
+      \  \"archivo_url\": \"https://storage.supabase.com/soat1.pdf\",\r
+
+      \  \"estado_vigente\": true,\r
+
+      \  \"observaciones\": \"Revisado por administración\",\r
+
+      \  \"id_vehiculo\": 7,\r
+
+      \  \"id_tipo_documento\": 1\r
+
+      }"
+response:
+  statusCode: 201
+  statusText: Created
+  headers:
+    X-Powered-By: Express
+    Access-Control-Allow-Origin: "*"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "516"
+    ETag: W/"204-8LWhCM+3a7XTxXs+RoY5v6fzk4o"
+    Date: Fri, 19 Jun 2026 20:29:48 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: text
+    content: |-
+      {
+          "success": true,
+          "message": "Registro creado en documentos_vehiculo",
+          "data": {
+              "id_documento": 2,
+              "numero_documento": "SOAT-2026-XYZ",
+              "tipo_documento_legal": "Seguro Obligatorio Accidentes",
+              "fecha_expedicion": "2026-01-01",
+              "fecha_vencimiento": "2027-01-01",
+              "aseguradora": "Seguros Alfa",
+              "valor_asegurado": 60000000,
+              "archivo_url": "https://storage.supabase.com/soat1.pdf",
+              "estado_vigente": true,
+              "observaciones": "Revisado por administración",
+              "fecha_registro": "2026-06-19T20:29:48.2067+00:00",
+              "id_vehiculo": 7,
+              "id_tipo_documento": 1
+          }
+      }
+order: 1000

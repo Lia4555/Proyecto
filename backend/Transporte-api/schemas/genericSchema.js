@@ -1,10 +1,15 @@
 import { z } from 'zod';
+import { lugar, nombrePersona, placa, telefono } from './reglas.js';
+
+// Nota sobre fechas con hora: Postgres las devuelve con zona horaria
+// ("2026-12-12T09:00:00+00:00"), por eso los datetime aceptan { offset: true }.
+// Sin eso, reenviar una fecha tal como llego de la base daba error 400.
 
 export const schemas = {
   roles: z.object({
     nombre_rol: z.string().min(2),
     descripcion: z.string().optional(),
-    nivel_permiso: z.number().int().default(1)
+    nivel_permiso: z.number().int().default(2) // 3 = Administrador · 2 = Conductor
   }),
 
   tipos_documentos: z.object({
@@ -45,13 +50,13 @@ export const schemas = {
 
   conductor: z.object({
     id_conductor: z.string().uuid().optional(),
-    nombre: z.string().min(2),
-    apellido: z.string().min(2),
+    nombre: nombrePersona('El nombre'),
+    apellido: nombrePersona('El apellido'),
     tipo_documento: z.string(),
     numero_documento: z.string(),
     email: z.string().email(),
-    telefono: z.string(),
-    fecha_nacimiento: z.string().datetime().optional().or(z.string().date()),
+    telefono: telefono(),
+    fecha_nacimiento: z.string().datetime({ offset: true }).optional().or(z.string().date()),
     direccion: z.string().optional(),
     licencia_conduccion: z.string().optional(),
     categoria_licencia: z.string().max(5).optional(),
@@ -62,19 +67,21 @@ export const schemas = {
 
   cliente: z.object({
     id_cliente: z.string().uuid().optional(),
-    nombre: z.string().min(2),
-    apellido: z.string().min(2),
+    nombre: nombrePersona('El nombre'),
+    apellido: nombrePersona('El apellido'),
     tipo_documento: z.string(),
     numero_documento: z.string(),
     email: z.string().email(),
-    telefono: z.string().optional(),
+    telefono: telefono().optional(),
     fecha_nacimiento: z.string().date().optional(),
     direccion: z.string().optional()
   }),
 
   vehiculos: z.object({
-    placa: z.string().max(10),
-    numero_interno: z.string().optional(),
+    placa: placa(),
+    // Consecutivo de la flota: si no llega, lo asigna el servidor
+    // (controllers/reglasTablas.js). Solo numeros.
+    numero_interno: z.string().trim().regex(/^\d{1,6}$/, 'El número interno solo puede tener números.').optional(),
     marca: z.string(),
     linea: z.string(), // Corregido de 'linee' a 'linea'
     modelo: z.string(),
@@ -123,11 +130,13 @@ export const schemas = {
   }),
 
   servicios: z.object({
-    codigo_servicio: z.string(),
+    // Se genera solo (SVC-0001, SVC-0002...). Se acepta si llega para no
+    // romper a los clientes que ya lo mandan (la app movil).
+    codigo_servicio: z.string().trim().min(1).optional(),
     tipo_servicio: z.string().default('Regular'),
-    fecha_salida: z.string().datetime(),
-    fecha_llegada_estimada: z.string().datetime(),
-    fecha_llegada_real: z.string().datetime().optional(),
+    fecha_salida: z.string().datetime({ offset: true }),
+    fecha_llegada_estimada: z.string().datetime({ offset: true }),
+    fecha_llegada_real: z.string().datetime({ offset: true }).optional(),
     numero_pasajeros: z.number().int().positive(),
     precio_total: z.number().positive(),
     distancia_estimada_km: z.number().optional(),
@@ -135,19 +144,26 @@ export const schemas = {
     observaciones: z.string().optional(),
     id_conductor: z.string().uuid(),
     id_vehiculo: z.number().int(),
-    id_origen: z.number().int(),
-    id_destino: z.number().int(),
+    // Origen y destino se escriben a mano. Los ids se siguen aceptando
+    // para la app movil, que aun elige de la lista de destinos: si llegan,
+    // el servidor rellena el texto a partir de ellos.
+    origen: lugar('El origen').optional(),
+    destino: lugar('El destino').optional(),
+    id_origen: z.number().int().nullable().optional(),
+    id_destino: z.number().int().nullable().optional(),
     id_estado: z.number().int()
   }),
 
   reservas: z.object({
-    numero_reserva: z.string(),
+    // Consecutivo automatico (RES-0001...), igual que el codigo de servicio.
+    numero_reserva: z.string().trim().min(1).optional(),
     asiento_asignado: z.string().max(10).optional(),
     clase_viaje: z.number().int(),
     precio_pagado: z.number().positive(),
     estado_reserva: z.string().default('Confirmada'),
-    fecha_check_in: z.string().datetime().optional(),
-    id_servicio: z.number().int(),
+    fecha_check_in: z.string().datetime({ offset: true }).optional(),
+    // Una reserva ya no tiene por que pertenecer a un servicio.
+    id_servicio: z.number().int().nullable().optional(),
     id_cliente: z.string().uuid()
   }),
 
@@ -165,13 +181,14 @@ export const schemas = {
     id_reserva_relacionada: z.number().int().nullable().optional()
   }),
 
+  // Esquema completo de la tabla usuario (uso interno / administrativo).
   usuario: z.object({
     id_usuario: z.string().uuid().optional(),
-    nombre: z.string().min(2, 'El nombre es obligatorio'),
-    apellido: z.string().min(2, 'El apellido es obligatorio'),
+    nombre: nombrePersona('El nombre'),
+    apellido: nombrePersona('El apellido'),
     correo: z.string().email('Email inválido'), // Sincronizado con la BD
     contrasena: z.string().min(6, 'La contraseña debe tener mínimo 6 caracteres'), // Sincronizado con la BD
-    telefono: z.string().optional(),
+    telefono: telefono().optional(),
     activo: z.boolean().default(true),
     id_rol: z.number().int()
   })

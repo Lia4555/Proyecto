@@ -1,0 +1,64 @@
+$kind: http-example
+request:
+  url: "{{baseUrl}}/alertas"
+  method: POST
+  body:
+    type: json
+    content: "{\r
+
+      \  \"tipo_alerta\": \"Retraso Operativo\",\r
+
+      \  \"descripcion\": \"El servicio presenta un retraso de 30 minutos por tráfico pesado.\",\r
+
+      \  \"fecha_limite\": \"2026-06-25\",\r
+
+      \  \"estado_resuelta\": false,\r
+
+      \  \"prioridad\": 3,\r
+
+      \  \"id_usuario_destino\": \"fd55577c-4251-4324-bd4f-5b5f60378e87\",\r
+
+      \  \"id_tipo_alerta\": 1,\r
+
+      \  \"id_vehiculo_relacionado\": 7,\r
+
+      \  \"id_servicio_relacionado\": 1,\r
+
+      \  \"id_reserva_relacionada\": 1\r
+
+      }"
+response:
+  statusCode: 201
+  statusText: Created
+  headers:
+    X-Powered-By: Express
+    Access-Control-Allow-Origin: "*"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "498"
+    ETag: W/"1f2-ggcpF7In3O1YVhvGQZyvx2w0EMQ"
+    Date: Fri, 19 Jun 2026 20:40:55 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: text
+    content: |-
+      {
+          "success": true,
+          "message": "Registro creado en alertas",
+          "data": {
+              "id_alerta": 2,
+              "tipo_alerta": "Retraso Operativo",
+              "descripcion": "El servicio presenta un retraso de 30 minutos por tráfico pesado.",
+              "fecha_creacion": "2026-06-19T20:40:55.12695+00:00",
+              "fecha_resolucion": null,
+              "fecha_limite": "2026-06-25",
+              "estado_resuelta": false,
+              "prioridad": 3,
+              "id_usuario_destino": "fd55577c-4251-4324-bd4f-5b5f60378e87",
+              "id_tipo_alerta": 1,
+              "id_vehiculo_relacionado": 7,
+              "id_servicio_relacionado": 1,
+              "id_reserva_relacionada": 1
+          }
+      }
+order: 1000

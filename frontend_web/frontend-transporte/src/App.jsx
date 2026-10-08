@@ -12,7 +12,6 @@ import { useNavegacion } from './hooks/useNavegacion.js'
 import Landing from './components/Landing.jsx'
 import Login from './components/Login.jsx'
 import Registro from './components/Registro.jsx'
-import Recuperar from './components/Recuperar.jsx'
 import Dashboard, { SECCIONES_ADMIN } from './components/Dashboard.jsx'
 import PanelConductor, { SECCIONES_CONDUCTOR } from './components/conductor/PanelConductor.jsx'
 import { useToast } from './components/ui/Toast.jsx'
@@ -24,7 +23,6 @@ import './navegacion.css'
 export const INICIO = 'inicio'
 export const ENTRAR = 'entrar'
 export const REGISTRO = 'registro'
-export const RECUPERAR = 'recuperar'
 
 export default function App() {
   // undefined = todavía preguntando al servidor · null = sin sesión
@@ -97,7 +95,7 @@ function Rutas({ usuario, onUsuario, toast }) {
 
   // Sin sesión: portada, login y registro. Con sesión: portada y las secciones del panel.
   const rutas = useMemo(
-    () => (usuario ? [INICIO, ...secciones] : [INICIO, ENTRAR, REGISTRO, RECUPERAR]),
+    () => (usuario ? [INICIO, ...secciones] : [INICIO, ENTRAR, REGISTRO]),
     // `secciones` se deriva de `usuario`: basta con vigilar la lista ya montada.
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [usuario, secciones.join('|')]
@@ -107,8 +105,6 @@ function Rutas({ usuario, onUsuario, toast }) {
   const rutaInicial = usuario ? secciones[0] : INICIO
 
   const nav = useNavegacion(rutas, rutaInicial, INICIO)
-  // Correo que se acaba de recuperar: el login lo trae ya escrito.
-  const [correoRecordado, setCorreoRecordado] = useState('')
   const { ruta, ir } = nav
 
   const iniciarSesion = (user) => {
@@ -143,30 +139,13 @@ function Rutas({ usuario, onUsuario, toast }) {
     return <Registro onIrALogin={() => ir(ENTRAR)} onVolver={() => ir(INICIO)} />
   }
 
-  // ---- Recuperar contraseña ---------------------------------------------
-  // Al terminar vuelve al login con el correo ya escrito: solo falta la clave.
-  if (!usuario && ruta === RECUPERAR) {
-    return (
-      <Recuperar
-        onIrALogin={(correo) => {
-          setCorreoRecordado(correo || '')
-          ir(ENTRAR)
-        }}
-        onVolver={() => ir(INICIO)}
-      />
-    )
-  }
-
   // ---- Inicio de sesión --------------------------------------------------
   if (!usuario) {
     return (
       <Login
-        key={correoRecordado}
-        correoInicial={correoRecordado}
         onLogin={iniciarSesion}
         onVolver={() => ir(INICIO)}
         onCrearCuenta={() => ir(REGISTRO)}
-        onRecuperar={() => ir(RECUPERAR)}
       />
     )
   }

@@ -1,0 +1,13 @@
+# Dependencias
+node_modules/
+
+# Variables de entorno: contienen la clave de Supabase y el JWT_SECRET.
+# NUNCA se suben al repositorio.
+.env
+.env.local
+
+# Logs y basura del sistema
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db

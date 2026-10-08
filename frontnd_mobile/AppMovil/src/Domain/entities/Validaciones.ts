@@ -50,3 +50,37 @@ export const errorTelefono = (texto: string): string | null => {
   }
   return null;
 };
+
+// ============================================================
+// REGLAS: contraseñas
+// ------------------------------------------------------------
+// Las mismas del backend (esquemaContrasena en cuentasController.js):
+// de 8 a 72 caracteres (72 es el limite real de bcrypt).
+// ============================================================
+
+export const CONTRASENA_MIN = 8;
+export const CONTRASENA_MAX = 72;
+
+export const errorContrasena = (texto: string): string | null => {
+  if (!texto) return 'Escribe la contraseña.';
+  if (texto.length < CONTRASENA_MIN) return `Debe tener al menos ${CONTRASENA_MIN} caracteres.`;
+  if (texto.length > CONTRASENA_MAX) return `Admite como máximo ${CONTRASENA_MAX} caracteres.`;
+  return null;
+};
+
+// ============================================================
+// DATOS ENMASCARADOS
+// ------------------------------------------------------------
+// La API no devuelve completos los datos delicados (documento,
+// licencia): llegan como "••••6589" (o "••••" si eran cortos).
+// Ese texto no es un valor real: no se valida ni se reenvia.
+// ============================================================
+
+/** Lo que pone el backend delante de los ultimos 4 caracteres (U+2022 x4). */
+export const MASCARA = '\u2022\u2022\u2022\u2022';
+
+export const esValorEnmascarado = (valor: unknown): boolean =>
+  typeof valor === 'string' && valor.includes(MASCARA);
+
+export const AYUDA_ENMASCARADO =
+  'Oculto por seguridad. Escribe el número completo solo si quieres cambiarlo.';

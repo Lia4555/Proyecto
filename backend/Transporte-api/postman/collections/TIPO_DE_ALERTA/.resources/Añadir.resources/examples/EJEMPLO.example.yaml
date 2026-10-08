@@ -1,0 +1,41 @@
+$kind: http-example
+request:
+  url: "{{baseUrl}}/tipos-alerta"
+  method: POST
+  body:
+    type: json
+    content: "{\r
+
+      \  \"nombre_tipo\": \"Falla Mecánica Grave\",\r
+
+      \  \"nivel_prioridad\": 3,\r
+
+      \  \"descripcion\": \"El vehículo requiere detención inmediata\"\r
+
+      }"
+response:
+  statusCode: 201
+  statusText: Created
+  headers:
+    X-Powered-By: Express
+    Access-Control-Allow-Origin: "*"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "205"
+    ETag: W/"cd-lBGJ3/5FcuBsFBfR1+ppUymuuCk"
+    Date: Fri, 19 Jun 2026 20:22:30 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: text
+    content: |-
+      {
+          "success": true,
+          "message": "Registro creado en tipos_alerta",
+          "data": {
+              "id_tipo_alerta": 2,
+              "nombre_tipo": "Falla Mecánica Grave",
+              "nivel_prioridad": 3,
+              "descripcion": "El vehículo requiere detención inmediata"
+          }
+      }
+order: 1000

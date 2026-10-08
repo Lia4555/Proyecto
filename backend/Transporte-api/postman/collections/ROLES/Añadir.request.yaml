@@ -1,0 +1,63 @@
+$kind: http-request
+description: |-
+  Crea un nuevo rol. Gestiona los roles del sistema. Solo existen dos: **Administrador** (nivel 3) y **Conductor** (nivel 2).
+
+  ## Endpoint
+
+  `POST {{baseUrl}}/roles`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **USUARIO › Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**.
+
+  Solo un usuario con rol **Administrador** puede usar este endpoint.
+
+  ## Request Body
+
+  | Campo | Tipo | Requerido | Descripción |
+  | --- | --- | --- | --- |
+  | `nombre_rol` | string | Sí | Nombre del rol (mínimo 2 caracteres). El login solo acepta `Administrador` y `Conductor`. |
+  | `descripcion` | string | No | Descripción del rol. |
+  | `nivel_permiso` | integer | No | `3` = Administrador, `2` = Conductor. Por defecto `2`. |
+
+  Los campos que no estén en esta tabla se ignoran.
+
+  ## Ejemplo de Request Body
+
+  ```json
+  {
+    "nombre_rol": "Conductor",
+    "descripcion": "Conduce los servicios asignados por el administrador",
+    "nivel_permiso": 2
+  }
+  ```
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `201 Created` | El rol se creó. Devuelve `{ success, message, data }` con el registro guardado. |
+  | `400 Bad Request` | Faltan campos obligatorios o algún dato no cumple el formato. El campo `detalles` indica qué campo falló y por qué. |
+  | `401 Unauthorized` | No se envió el token, o el token expiró (dura 8 horas). Vuelve a ejecutar el login. |
+  | `403 Forbidden` | El rol de la sesión no tiene permiso para esta operación. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+
+  ## Notas
+
+  - Un rol con otro nombre no da acceso: el login rechaza cualquier rol que no sea `Administrador` o `Conductor`.
+url: "{{baseUrl}}/roles"
+method: POST
+body:
+  type: json
+  content: |-
+    {
+      "nombre_rol": "Conductor",
+      "descripcion": "Conduce los servicios asignados por el administrador",
+      "nivel_permiso": 2
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+examples: ./.resources/Añadir.resources/examples
+order: 1000

@@ -1,0 +1,70 @@
+$kind: http-request
+description: |-
+  Aprueba una cuenta pendiente (o reactiva una desactivada) y le asigna el rol. Desde ese momento puede iniciar sesión.
+
+  ## Endpoint
+
+  `PATCH {{baseUrl}}/cuentas/:id/aprobar`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **USUARIO › Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**. Además, en cada petición se comprueba que la cuenta siga activa: si un administrador la desactiva, el token deja de servir al momento (`401`).
+
+  Solo un usuario con rol **Administrador** puede usar este endpoint.
+
+  ## Parámetros de ruta
+
+  Parámetro `id`: `id_usuario` (UUID) de la cuenta. Se toma de **Show All (listar cuentas)** y se pone en la variable `id_cuenta` del environment, o se pega directamente en la URL.
+
+  ## Request Body
+
+  | Campo | Tipo | Requerido | Descripción |
+  | --- | --- | --- | --- |
+  | `rol` | string | No | `"Conductor"` o `"Administrador"`. Si no se envía, conserva el rol que tenía (Conductor en las cuentas del registro). |
+
+  ## Ejemplo de Request Body
+
+  ```json
+  {
+    "rol": "Conductor"
+  }
+  ```
+
+  ## Ejemplo de respuesta
+
+  ```json
+  {
+    "success": true,
+    "rol": "Conductor",
+    "advertencia": null,
+    "message": "Cuenta andres.ruiz@gmail.com aprobada como Conductor."
+  }
+  ```
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `200 OK` | Cuenta aprobada o reactivada. Si es Conductor y no tiene ficha, `advertencia` lo indica. |
+  | `400 Bad Request` | La cuenta ya está activa, o el `rol` no es válido. |
+  | `401 Unauthorized` | No se envió el token, o el token expiró (dura 8 horas). Vuelve a ejecutar el login. |
+  | `403 Forbidden` | El rol de la sesión no tiene permiso para esta operación. |
+  | `404 Not Found` | No existe una cuenta con ese `id`. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+
+  ## Notas
+
+  - Un **Conductor** necesita una ficha en **CONDUCTORES** con el mismo correo para poder entrar; el registro público ya la crea.
+url: "{{baseUrl}}/cuentas/{{id_cuenta}}/aprobar"
+method: PATCH
+body:
+  type: json
+  content: |-
+    {
+      "rol": "Conductor"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+order: 7000

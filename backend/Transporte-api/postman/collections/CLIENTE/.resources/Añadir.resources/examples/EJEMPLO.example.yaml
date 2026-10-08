@@ -1,0 +1,56 @@
+$kind: http-example
+request:
+  url: "{{baseUrl}}/clientes"
+  method: POST
+  body:
+    type: json
+    content: "{\r
+
+      \  \"nombre\": \"Anamaría\",\r
+
+      \  \"apellido\": \"Restrepo\",\r
+
+      \  \"tipo_documento\": \"CE\",\r
+
+      \  \"numero_documento\": \"523456\",\r
+
+      \  \"email\": \"anamaria@email.com\",\r
+
+      \  \"telefono\": \"3159998877\",\r
+
+      \  \"fecha_nacimiento\": \"1998-09-30\",\r
+
+      \  \"direccion\": \"Calle 100 #15-22\"\r
+
+      }"
+response:
+  statusCode: 201
+  statusText: Created
+  headers:
+    X-Powered-By: Express
+    Access-Control-Allow-Origin: "*"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "325"
+    ETag: W/"145-ioFoRUsS4Z50cY7XLPX82VRYRXw"
+    Date: Fri, 19 Jun 2026 20:27:00 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: text
+    content: |-
+      {
+          "success": true,
+          "message": "Registro creado en cliente",
+          "data": {
+              "id_cliente": "a12d6a5b-f2d3-475f-a65d-6901ba20e535",
+              "nombre": "Anamaría",
+              "apellido": "Restrepo",
+              "tipo_documento": "CE",
+              "numero_documento": "523456",
+              "email": "anamaria@email.com",
+              "telefono": "3159998877",
+              "fecha_nacimiento": "1998-09-30",
+              "direccion": "Calle 100 #15-22"
+          }
+      }
+order: 1000
