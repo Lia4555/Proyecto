@@ -1358,17 +1358,13 @@ input:disabled, textarea:disabled, select:disabled {
   pointer-events: none;
 }
 
-/* ---------- Recuperar contraseña ---------- */
+/* ---------- Contraseñas (cambiar la propia / restablecer) ---------- */
 
-/* Etiqueta con un enlace a la derecha («¿Olvidaste tu contraseña?»). */
-.field-label-fila {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-.linkbtn.pequeno { font-size: 0.8rem; }
+/* El modal de confirmación es centrado; el de contraseña es un formulario. */
+.modal.clave-modal { text-align: left; max-width: 440px; }
+.clave-cabecera { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.clave-form { margin-top: 18px; }
+.clave-form .modal-actions { justify-content: flex-end; margin-top: 4px; }
 
 /* Medidor de fortaleza: orienta, no bloquea. El texto siempre acompaña
    al color, para quien no distingue colores. */
@@ -1403,5 +1399,6 @@ input:disabled, textarea:disabled, select:disabled {
   .fortaleza-barra > span { transition: none; }
 }
 
-/* «¿Olvidaste tu contraseña?» centrado bajo el botón Entrar. */
-.login-recuperar { margin: 0; text-align: center; font-size: 0.85rem; }
+/* «¿Olvidaste tu contraseña?» centrado bajo el botón Entrar: solo texto,
+   la contraseña la restablece un administrador. */
+.login-recuperar { margin: 0; text-align: center; font-size: 0.85rem; color: var(--muted); }

@@ -1,0 +1,72 @@
+$kind: http-request
+description: |-
+  Actualiza el mantenimiento indicado por su `id_mantenimiento`. Es una **actualización parcial**: solo se envían los campos que se quieren cambiar.
+
+  ## Endpoint
+
+  `PUT {{baseUrl}}/mantenimientos/:id`
+
+  Ejemplo: `PUT {{baseUrl}}/mantenimientos/2`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **USUARIO › Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**.
+
+  Solo un usuario con rol **Administrador** puede usar este endpoint.
+
+  ## Parámetros de ruta
+
+  | Parámetro | Tipo | Requerido | Descripción |
+  | --- | --- | --- | --- |
+  | `id` | integer | Sí | `id_mantenimiento` del registro a actualizar. |
+
+  ## Request Body
+
+  Cualquiera de estos campos (todos opcionales), con las mismas reglas que al crear:
+
+  | Campo | Tipo | Descripción |
+  | --- | --- | --- |
+  | `fecha_mantenimiento` | string (date) | Formato `YYYY-MM-DD`. |
+  | `tipo_mantenimiento` | string | Ej. "Preventivo", "Correctivo". |
+  | `descripcion` | string | Trabajos realizados. |
+  | `costo` | number | Costo en pesos (mayor que 0). |
+  | `taller_responsable` | string | Taller que hizo el trabajo. |
+  | `kilometraje_actual` | number | Kilometraje al momento del mantenimiento. |
+  | `proximo_mantenimiento` | string (date) | Fecha del próximo mantenimiento, `YYYY-MM-DD`. |
+  | `kilometraje_proximo_mantenimiento` | number | Kilometraje del próximo mantenimiento. |
+  | `observaciones` | string | Notas adicionales. |
+  | `id_vehiculo` | integer | ID del vehículo (ver **VEHÍCULO**). |
+
+  ## Ejemplo de Request Body
+
+  ```json
+  {
+    "costo": 285000,
+    "observaciones": "Se cambió también el filtro de aire."
+  }
+  ```
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `200 OK` | Registro actualizado. Devuelve `{ success, data }` con el registro completo. |
+  | `400 Bad Request` | No se envió ningún campo válido, o algún dato no cumple el formato (ver `detalles`). |
+  | `401 Unauthorized` | No se envió el token, o el token expiró (dura 8 horas). Vuelve a ejecutar el login. |
+  | `403 Forbidden` | El rol de la sesión no tiene permiso para esta operación. |
+  | `404 Not Found` | No existe un mantenimiento con ese `id`. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+url: "{{baseUrl}}/mantenimientos/2"
+method: PUT
+body:
+  type: json
+  content: |-
+    {
+      "costo": 285000,
+      "observaciones": "Se cambió también el filtro de aire."
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+order: 3000

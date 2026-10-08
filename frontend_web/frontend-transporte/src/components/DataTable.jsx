@@ -116,11 +116,14 @@ export default function DataTable({ entity, puedeEscribir, acciones = null }) {
 
   // Todas las columnas mostrables: los campos configurados y cualquier
   // columna extra que devuelva la base de datos.
+  // Los datos `privado` (fecha de nacimiento, dirección) la API no los
+  // devuelve: una columna siempre vacía solo confundiría.
   const todasLasColumnas = useMemo(() => {
-    const lista = entity.fields.map((f) => f.name)
+    const privados = entity.fields.filter((f) => f.privado).map((f) => f.name)
+    const lista = entity.fields.map((f) => f.name).filter((c) => !privados.includes(c))
     for (const fila of filas) {
       for (const clave of Object.keys(fila)) {
-        if (!lista.includes(clave)) lista.push(clave)
+        if (!lista.includes(clave) && !privados.includes(clave)) lista.push(clave)
       }
     }
     return lista.filter((c) => !esColumnaDeId(c))

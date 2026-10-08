@@ -1,0 +1,67 @@
+$kind: http-request
+description: |-
+  Actualiza la clase de viaje indicado por su `id_clase`. Es una **actualización parcial**: solo se envían los campos que se quieren cambiar.
+
+  ## Endpoint
+
+  `PUT {{baseUrl}}/clases-viaje/:id`
+
+  Ejemplo: `PUT {{baseUrl}}/clases-viaje/1`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **USUARIO › Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**.
+
+  Solo un usuario con rol **Administrador** puede usar este endpoint.
+
+  ## Parámetros de ruta
+
+  | Parámetro | Tipo | Requerido | Descripción |
+  | --- | --- | --- | --- |
+  | `id` | integer | Sí | `id_clase` del registro a actualizar. |
+
+  ## Request Body
+
+  Cualquiera de estos campos (todos opcionales), con las mismas reglas que al crear:
+
+  | Campo | Tipo | Descripción |
+  | --- | --- | --- |
+  | `nombre_clase` | string | Nombre de la clase (mínimo 2 caracteres). **Único**: no se puede repetir. |
+  | `descripcion` | string | Descripción breve de la clase. |
+  | `multiplicador_precio` | number | Factor que se aplica al precio base. Por defecto `1.00`. |
+  | `beneficios` | string | Beneficios incluidos en la clase. |
+
+  ## Ejemplo de Request Body
+
+  ```json
+  {
+    "descripcion": "Asiento estándar con aire acondicionado",
+    "beneficios": "Equipaje de mano de 5 kg"
+  }
+  ```
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `200 OK` | Registro actualizado. Devuelve `{ success, data }` con el registro completo. |
+  | `400 Bad Request` | No se envió ningún campo válido, o algún dato no cumple el formato (ver `detalles`). |
+  | `401 Unauthorized` | No se envió el token, o el token expiró (dura 8 horas). Vuelve a ejecutar el login. |
+  | `403 Forbidden` | El rol de la sesión no tiene permiso para esta operación. |
+  | `404 Not Found` | No existe una clase de viaje con ese `id`. |
+  | `409 Conflict` | Ya existe otro registro con ese nombre_clase. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+url: "{{baseUrl}}/clases-viaje/1"
+method: PUT
+body:
+  type: json
+  content: |-
+    {
+      "descripcion": "Asiento estándar con aire acondicionado",
+      "beneficios": "Equipaje de mano de 5 kg"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+order: 3000

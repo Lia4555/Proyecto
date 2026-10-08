@@ -1,0 +1,12 @@
+name: TransporteAPI
+values:
+  - key: auth_token
+    value: ''
+  - key: baseUrl
+    value: 'http://localhost:3000/api'
+  - key: correo
+    value: liaadmin@gmail.com
+  - key: contrasena
+    value: escribe-aqui-tu-contrasena
+  - key: id_cuenta
+    value: pega-aqui-el-id_usuario

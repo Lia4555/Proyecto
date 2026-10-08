@@ -1,0 +1,57 @@
+$kind: http-example
+request:
+  url: "{{baseUrl}}/reservas"
+  method: POST
+  body:
+    type: json
+    content: "{\r
+
+      \  \"numero_reserva\": \"RES-554411\",\r
+
+      \  \"asiento_asignado\": \"Copiloto\",\r
+
+      \  \"clase_viaje\": 1,\r
+
+      \  \"precio_pagado\": 85000,\r
+
+      \  \"estado_reserva\": \"Confirmada\",\r
+
+      \  \"fecha_check_in\": \"2026-06-25T06:00:00Z\",\r
+
+      \  \"id_servicio\": 1,\r
+
+      \  \"id_cliente\": \"a12d6a5b-f2d3-475f-a65d-6901ba20e535\"\r
+
+      }"
+response:
+  statusCode: 201
+  statusText: Created
+  headers:
+    X-Powered-By: Express
+    Access-Control-Allow-Origin: "*"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "372"
+    ETag: W/"174-Cbn4nOKD2KfpmJyyVz/7ezefDCs"
+    Date: Fri, 19 Jun 2026 20:37:28 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: text
+    content: |-
+      {
+          "success": true,
+          "message": "Registro creado en reservas",
+          "data": {
+              "id_reserva": 1,
+              "numero_reserva": "RES-554411",
+              "fecha_reserva": "2026-06-19T20:37:28.634844+00:00",
+              "asiento_asignado": "Copiloto",
+              "clase_viaje": 1,
+              "precio_pagado": 85000,
+              "estado_reserva": "Confirmada",
+              "fecha_check_in": "2026-06-25T06:00:00+00:00",
+              "id_servicio": 1,
+              "id_cliente": "a12d6a5b-f2d3-475f-a65d-6901ba20e535"
+          }
+      }
+order: 1000

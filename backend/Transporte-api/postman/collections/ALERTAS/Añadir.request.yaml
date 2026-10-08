@@ -1,0 +1,78 @@
+$kind: http-request
+description: |-
+  Crea una nueva alerta. Gestiona las alertas operativas dirigidas a un conductor (vencimientos, mantenimientos, incidentes en ruta…).
+
+  ## Endpoint
+
+  `POST {{baseUrl}}/alertas`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **USUARIO › Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**.
+
+  Solo un usuario con rol **Administrador** puede usar este endpoint.
+
+  ## Request Body
+
+  | Campo | Tipo | Requerido | Descripción |
+  | --- | --- | --- | --- |
+  | `tipo_alerta` | string | No | Texto libre con el tipo de alerta (ej. "Retraso operativo"). El tipo del catálogo se indica con `id_tipo_alerta`. |
+  | `descripcion` | string | Sí | Detalle del motivo de la alerta (mínimo 2 caracteres). |
+  | `fecha_limite` | string (date) | No | Fecha límite para resolverla, formato `YYYY-MM-DD`. |
+  | `estado_resuelta` | boolean | No | `false` = pendiente, `true` = resuelta. Por defecto `false`. |
+  | `prioridad` | integer | No | Prioridad de la alerta (1 = baja … 5 = crítica). Por defecto `1`. |
+  | `id_usuario_destino` | string (UUID) | Sí | `id_conductor` del conductor que recibe la alerta (ver **CONDUCTORES**). |
+  | `id_tipo_alerta` | integer | Sí | ID del tipo de alerta del catálogo (ver **TIPO_DE_ALERTA**). |
+  | `id_vehiculo_relacionado` | integer \| null | No | ID del vehículo relacionado. |
+  | `id_servicio_relacionado` | integer \| null | No | ID del servicio relacionado. |
+  | `id_reserva_relacionada` | integer \| null | No | ID de la reserva relacionada. |
+
+  Los campos que no estén en esta tabla se ignoran.
+
+  ## Ejemplo de Request Body
+
+  ```json
+  {
+    "tipo_alerta": "Incidente en ruta",
+    "descripcion": "El servicio presenta un retraso de 30 minutos por tráfico pesado en la autopista.",
+    "fecha_limite": "2026-10-15",
+    "estado_resuelta": false,
+    "prioridad": 4,
+    "id_usuario_destino": "f38b2ffc-80a4-4f5a-91c9-bc701e7ea419",
+    "id_tipo_alerta": 4,
+    "id_vehiculo_relacionado": 2,
+    "id_servicio_relacionado": 2
+  }
+  ```
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `201 Created` | La alerta se creó. Devuelve `{ success, message, data }` con el registro guardado. |
+  | `400 Bad Request` | Faltan campos obligatorios o algún dato no cumple el formato. El campo `detalles` indica qué campo falló y por qué. |
+  | `401 Unauthorized` | No se envió el token, o el token expiró (dura 8 horas). Vuelve a ejecutar el login. |
+  | `403 Forbidden` | El rol de la sesión no tiene permiso para esta operación. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+url: "{{baseUrl}}/alertas"
+method: POST
+body:
+  type: json
+  content: |-
+    {
+      "tipo_alerta": "Incidente en ruta",
+      "descripcion": "El servicio presenta un retraso de 30 minutos por tráfico pesado en la autopista.",
+      "fecha_limite": "2026-10-15",
+      "estado_resuelta": false,
+      "prioridad": 4,
+      "id_usuario_destino": "f38b2ffc-80a4-4f5a-91c9-bc701e7ea419",
+      "id_tipo_alerta": 4,
+      "id_vehiculo_relacionado": 2,
+      "id_servicio_relacionado": 2
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+examples: ./.resources/Añadir.resources/examples
+order: 1000

@@ -1,0 +1,55 @@
+$kind: http-request
+description: |-
+  Lista el catálogo de tipos de vehículo (Automóvil, Van, Bus…). Devuelve un arreglo JSON con todos los registros.
+
+  ## Endpoint
+
+  `GET {{baseUrl}}/tipos-vehiculo`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **USUARIO › Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**.
+
+  ## Permisos
+
+  - **Administrador:** ve todos los registros.
+  - Un **Conductor** puede consultar el catálogo completo, pero no modificarlo.
+
+  ## Campos de la respuesta
+
+  | Campo | Tipo | Descripción |
+  | --- | --- | --- |
+  | `id_tipo_vehiculo` | integer | Identificador único (lo asigna la base de datos). |
+  | `nombre_tipo` | string | Nombre del tipo (mínimo 2 caracteres). **Único**. |
+  | `descripcion` | string | Descripción del tipo de vehículo. |
+
+  ## Ejemplo de respuesta
+
+  ```json
+  [
+    {
+      "id_tipo_vehiculo": 1,
+      "nombre_tipo": "Autobús de dos pisos",
+      "descripcion": "Vehículo de larga distancia con capacidad superior a 60 pasajeros"
+    }
+  ]
+  ```
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `200 OK` | Arreglo con los registros (vacío `[]` si no hay ninguno). |
+  | `401 Unauthorized` | No se envió el token, o el token expiró (dura 8 horas). Vuelve a ejecutar el login. |
+  | `403 Forbidden` | El rol de la sesión no tiene permiso para esta operación. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+url: "{{baseUrl}}/tipos-vehiculo"
+method: GET
+body:
+  type: text
+  content: ""
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+order: 2000

@@ -1,0 +1,74 @@
+$kind: http-example
+request:
+  url: "{{baseUrl}}/conductor"
+  method: POST
+  body:
+    type: json
+    content: "{\r
+
+      \  \"nombre\": \"Carlos\",\r
+
+      \  \"apellido\": \"Mendoza\",\r
+
+      \  \"tipo_documento\": \"CC\",\r
+
+      \  \"numero_documento\": \"80123456\",\r
+
+      \  \"email\": \"carlos.mendoza@transporte.com\",\r
+
+      \  \"telefono\": \"3105554433\",\r
+
+      \  \"fecha_nacimiento\": \"1985-04-12\",\r
+
+      \  \"direccion\": \"Carrera 7 #45-10\",\r
+
+      \  \"licencia_conduccion\": \"95041280\",\r
+
+      \  \"categoria_licencia\": \"C3\",\r
+
+      \  \"fecha_expedicion_licencia\": \"2021-05-20\",\r
+
+      \  \"fecha_vencimiento_licencia\": \"2031-05-20\",\r
+
+      \  \"id_rol\": 1\r
+
+      }"
+response:
+  statusCode: 201
+  statusText: Created
+  headers:
+    X-Powered-By: Express
+    Access-Control-Allow-Origin: "*"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "578"
+    ETag: W/"242-yg8XOApzKbgRgG6ksmNqmDu1jPU"
+    Date: Fri, 19 Jun 2026 20:26:35 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: text
+    content: |-
+      {
+          "success": true,
+          "message": "Registro creado en conductor",
+          "data": {
+              "id_conductor": "fd55577c-4251-4324-bd4f-5b5f60378e87",
+              "nombre": "Carlos",
+              "apellido": "Mendoza",
+              "tipo_documento": "CC",
+              "numero_documento": "80123456",
+              "email": "carlos.mendoza@transporte.com",
+              "telefono": "3105554433",
+              "fecha_nacimiento": "1985-04-12",
+              "direccion": "Carrera 7 #45-10",
+              "licencia_conduccion": "95041280",
+              "categoria_licencia": "C3",
+              "fecha_expedicion_licencia": "2021-05-20",
+              "fecha_vencimiento_licencia": "2031-05-20",
+              "fecha_registro": "2026-06-19T20:26:35.888603+00:00",
+              "ultimo_acceso": null,
+              "activo": true,
+              "id_rol": 1
+          }
+      }
+order: 1000

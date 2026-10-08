@@ -9,3 +9,4 @@ export * from './useRegistroViewModel';
 export * from './useAdmin';
 export * from './useFormulariosAdmin';
 export * from './useFotoPerfil';
+export * from './useCambiarContrasenaViewModel';

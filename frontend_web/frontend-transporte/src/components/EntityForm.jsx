@@ -1,7 +1,13 @@
 import { useMemo, useRef, useState } from 'react'
 import api, { getErrorMessage, getFieldErrors } from '../api/api.js'
-import { buildInitialValues, buildPayload, esAutomatico, hayCambios, validateValues } from '../lib/form.js'
-import { TIPOS_DOC_ALFANUMERICOS, limpiarDocumento, limpiarSegunFormato } from '../lib/validaciones.js'
+import { ayudaDe, buildInitialValues, buildPayload, esAutomatico, hayCambios, validateValues } from '../lib/form.js'
+import {
+  TIPOS_DOC_ALFANUMERICOS,
+  esEnmascarado,
+  limpiarDocumento,
+  limpiarSegunFormato,
+  quitarMascara
+} from '../lib/validaciones.js'
 import { useDialog } from '../hooks/useDialog.js'
 import ConfirmDialog from './ui/ConfirmDialog.jsx'
 import { IconAlerta, IconCerrar } from './ui/Icons.jsx'
@@ -90,9 +96,14 @@ export default function EntityForm({
 
   // Al crear no se muestran los campos que solo tienen sentido después
   // (la llegada real de un servicio que aún no ha salido, por ejemplo).
+  // En el detalle se omiten los datos que la API nunca devuelve: siempre
+  // saldrían vacíos.
   const campos = useMemo(
-    () => entity.fields.filter((f) => esEdicion || !f.soloEdicion),
-    [entity, esEdicion]
+    () =>
+      entity.fields.filter(
+        (f) => (esEdicion || !f.soloEdicion) && !(soloLectura && f.privado)
+      ),
+    [entity, esEdicion, soloLectura]
   )
 
   const setField = (name, value) => {
@@ -100,7 +111,8 @@ export default function EntityForm({
       const siguiente = { ...prev, [name]: value }
       // Si cambia el tipo de documento, el número se vuelve a filtrar:
       // al pasar de pasaporte a cédula desaparecen las letras.
-      if (name === 'tipo_documento' && 'numero_documento' in prev) {
+      // (Un número enmascarado "••••6589" no se toca: no es el valor real.)
+      if (name === 'tipo_documento' && 'numero_documento' in prev && !esEnmascarado(prev.numero_documento)) {
         siguiente.numero_documento = limpiarDocumento(prev.numero_documento, value)
       }
       return siguiente
@@ -262,6 +274,9 @@ export default function EntityForm({
                     )
                   }
 
+                  const ayuda = soloLectura ? f.hint : ayudaDe(f, values[f.name], esEdicion)
+                  const enmascarado = esEnmascarado(values[f.name])
+
                   const comunes = {
                     id: idCampo,
                     name: f.name,
@@ -269,12 +284,20 @@ export default function EntityForm({
                     disabled: soloLectura,
                     'aria-invalid': tieneError || undefined,
                     'aria-describedby':
-                      [tieneError ? idError : null, f.hint ? idAyuda : null]
+                      [tieneError ? idError : null, ayuda ? idAyuda : null]
                         .filter(Boolean)
                         .join(' ') || undefined,
                     // Nombres sin números, teléfonos y cantidades sin letras:
                     // lo no permitido ni siquiera llega a aparecer en el campo.
-                    onChange: (e) => setField(f.name, limpiarSegunFormato(formatoDe(f), e.target.value, values)),
+                    // Sobre un valor enmascarado, lo escrito reemplaza a la máscara.
+                    onChange: (e) =>
+                      setField(
+                        f.name,
+                        limpiarSegunFormato(formatoDe(f), quitarMascara(e.target.value, values[f.name]), values)
+                      ),
+                    // Al entrar en un campo enmascarado se selecciona todo: lo
+                    // primero que se escriba sustituye a "••••6589".
+                    onFocus: enmascarado ? (e) => e.target.select?.() : undefined,
                     onBlur: () => validarAlSalir(f)
                   }
 
@@ -309,6 +332,7 @@ export default function EntityForm({
                           type={tipoDeInput(f.type)}
                           inputMode={tecladoDe(f, values)}
                           autoComplete="off"
+                          placeholder={esEdicion && f.privado && !soloLectura ? 'Oculto por seguridad' : undefined}
                           {...comunes}
                         />
                       )}
@@ -321,7 +345,7 @@ export default function EntityForm({
                           para elegirlo por su nombre.
                         </p>
                       ) : (
-                        f.hint && <p className="field-hint" id={idAyuda}>{f.hint}</p>
+                        ayuda && <p className="field-hint" id={idAyuda}>{ayuda}</p>
                       )}
                     </div>
                   )

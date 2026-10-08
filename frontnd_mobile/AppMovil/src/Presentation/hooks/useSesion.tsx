@@ -1,5 +1,5 @@
 import React, { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { casosDeUso, limpiarCaches } from '../../Data/di/Container';
+import { casosDeUso, escucharSesionPerdida, limpiarCaches } from '../../Data/di/Container';
 import { Usuario, esAdministrador, esConductor } from '../../Domain/entities';
 import { olvidarFotoPerfil } from './fotoPerfilStore';
 
@@ -74,6 +74,18 @@ export const ProveedorSesion = ({ children }: { children: ReactNode }) => {
     olvidarFotoPerfil();
     setUsuario(null);
   }, []);
+
+  // Si el servidor deja de aceptar la sesion a mitad de uso (caducada, o
+  // "Tu cuenta ya no está activa..."), se sale y el mensaje del servidor
+  // queda como error para que el login explique que paso.
+  useEffect(
+    () =>
+      escucharSesionPerdida((mensaje) => {
+        setError(mensaje);
+        salir();
+      }),
+    [salir]
+  );
 
   const valor = useMemo<EstadoSesion>(
     () => ({

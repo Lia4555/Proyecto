@@ -1,0 +1,55 @@
+$kind: http-request
+description: |-
+  Lista el catálogo de estados de un servicio (Pendiente, Programado, En curso, Finalizado…). Devuelve un arreglo JSON con todos los registros.
+
+  ## Endpoint
+
+  `GET {{baseUrl}}/estados-servicio`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **USUARIO › Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**.
+
+  ## Permisos
+
+  - **Administrador:** ve todos los registros.
+  - Un **Conductor** puede consultar el catálogo completo, pero no modificarlo.
+
+  ## Campos de la respuesta
+
+  | Campo | Tipo | Descripción |
+  | --- | --- | --- |
+  | `id_estado` | integer | Identificador único (lo asigna la base de datos). |
+  | `nombre_estado` | string | Nombre del estado (mínimo 2 caracteres). **Único**. |
+  | `descripcion` | string | Qué significa el estado. |
+
+  ## Ejemplo de respuesta
+
+  ```json
+  [
+    {
+      "id_estado": 1,
+      "nombre_estado": "En espera de pasajeros",
+      "descripcion": "El vehículo está en el punto de salida esperando a los pasajeros."
+    }
+  ]
+  ```
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `200 OK` | Arreglo con los registros (vacío `[]` si no hay ninguno). |
+  | `401 Unauthorized` | No se envió el token, o el token expiró (dura 8 horas). Vuelve a ejecutar el login. |
+  | `403 Forbidden` | El rol de la sesión no tiene permiso para esta operación. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+url: "{{baseUrl}}/estados-servicio"
+method: GET
+body:
+  type: text
+  content: ""
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+order: 2000

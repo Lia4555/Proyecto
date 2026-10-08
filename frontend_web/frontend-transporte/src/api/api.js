@@ -59,7 +59,8 @@ export function getErrorMessage(error) {
   }
 
   if (Array.isArray(data.detalles) && data.detalles.length > 0) {
-    return data.detalles.map((d) => `${d.campo}: ${d.mensaje}`).join(' · ')
+    // Algunos detalles llegan sin campo (campo: ''): solo se muestra el mensaje.
+    return data.detalles.map((d) => (d.campo ? `${d.campo}: ${d.mensaje}` : d.mensaje)).join(' · ')
   }
 
   return data.error || data.message || 'Ocurrió un error inesperado.'

@@ -1,0 +1,55 @@
+$kind: http-request
+description: |-
+  Cambia la contraseña de la **propia cuenta** (la del token; no se puede indicar otra). Pide la contraseña actual.
+
+  ## Endpoint
+
+  `PUT {{baseUrl}}/perfil/contrasena`
+
+  ## Autenticación
+
+  Requiere el header `Authorization: Bearer {{auth_token}}`. El token se obtiene con **Crear LogIn Token** (o **Admin login**), que lo guarda solo en la variable `auth_token` del environment **TransporteAPI**.
+
+  Cualquier usuario con sesión (Administrador o Conductor).
+
+  ## Request Body
+
+  | Campo | Tipo | Requerido | Descripción |
+  | --- | --- | --- | --- |
+  | `actual` | string | Sí | La contraseña actual de la cuenta. |
+  | `nueva` | string | Sí | La nueva contraseña, de 8 a 72 caracteres. |
+
+  ## Ejemplo de Request Body
+
+  ```json
+  {
+    "actual": "{{contrasena}}",
+    "nueva": "NuevaClaveSegura2026"
+  }
+  ```
+
+  Después de cambiarla, actualiza la variable `contrasena` del environment para que **Crear LogIn Token** siga funcionando.
+
+  ## Respuestas
+
+  | Código | Descripción |
+  | --- | --- |
+  | `200 OK` | `{ success: true, message: "Tu contraseña se cambió." }`. La sesión actual sigue activa. |
+  | `400 Bad Request` | La contraseña actual no es correcta (`detalles` con campo `actual`) o la nueva no cumple el formato. |
+  | `401 Unauthorized` | No se envió el token, expiró o la cuenta ya no está activa. |
+  | `429 Too Many Requests` | Más de 5 intentos en 15 minutos. |
+  | `500 Internal Server Error` | Error interno del servidor. |
+url: "{{baseUrl}}/perfil/contrasena"
+method: PUT
+body:
+  type: json
+  content: |-
+    {
+      "actual": "{{contrasena}}",
+      "nueva": "NuevaClaveSegura2026"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_token}}"
+order: 9000

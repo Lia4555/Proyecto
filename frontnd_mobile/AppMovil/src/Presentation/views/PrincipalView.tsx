@@ -41,15 +41,19 @@ import { VehiculoView } from './VehiculoView';
 type PantallaPublica = 'inicio' | 'entrar' | 'registro';
 
 export const PrincipalView = () => {
-  const { usuario, iniciando, esAdmin } = useSesion();
+  const { usuario, iniciando, esAdmin, error } = useSesion();
   const [publica, setPublica] = useState<PantallaPublica>('inicio');
   const [verPortada, setVerPortada] = useState(false);
 
   // Al entrar o al salir se limpia la pantalla publica en la que se estaba:
-  // tras cerrar sesion se vuelve a la portada, no al formulario.
+  // tras cerrar sesion se vuelve a la portada, no al formulario. Si la
+  // sesion se perdio sola (401: caducada o cuenta desactivada) se va al
+  // login, que muestra el motivo que dio el servidor.
   useEffect(() => {
-    setPublica('inicio');
+    setPublica(!usuario && error ? 'entrar' : 'inicio');
     setVerPortada(false);
+    // Solo debe reaccionar al cambio de usuario, no a cada error del login.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [usuario]);
 
   // Boton "atras" de Android: del registro vuelve al login, del login a la
