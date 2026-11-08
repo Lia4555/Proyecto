@@ -9,47 +9,51 @@
 
 /* ---------------------------- 1. TOKENS ---------------------------- */
 :root {
-  /* Marca */
-  --rojo: #d81e24;
-  --rojo-hover: #b8171c;
-  --rojo-suave: #fdecec;
-  --vino: #7a1113;
-  --vino-2: #611012;
-  --vino-3: #4d0d0f;
-  --salmon: #e9a7a7;
+  /* Marca: vino profundo con acento champán */
+  --rojo: #9e1b2b;
+  --rojo-hover: #84141f;
+  --rojo-suave: #f8eced;
+  --vino: #5c0f1b;
+  --vino-2: #3f0b14;
+  --vino-3: #2a080e;
+  --salmon: #d7c3a3;
+  --oro: #b08d57;
+  --oro-suave: #f5eee2;
+  --espresso: #1d1214;
 
-  /* Estados */
-  --verde: #17a34a;
-  --verde-suave: #e8f6ee;
-  --ambar: #b45309;
-  --ambar-suave: #fef4e2;
-  --error: #c02b22;
+  /* Estados (tonos sobrios) */
+  --verde: #2f7d55;
+  --verde-suave: #eaf4ee;
+  --ambar: #a35f0e;
+  --ambar-suave: #fbf1e1;
+  --error: #b42318;
 
-  /* Neutros */
-  --tinta: #16181d;
-  --texto: #33363d;
-  --muted: #6b7280;
-  --muted-2: #9aa3b2;
-  --linea: #e4e7ee;
-  --linea-2: #eef0f5;
-  --fondo-input: #f4f5f8;
-  --papel: #f5f6f9;
+  /* Neutros cálidos */
+  --tinta: #1c1714;
+  --texto: #3d3733;
+  --muted: #7a716b;
+  --muted-2: #a9a19a;
+  --linea: #e8e2da;
+  --linea-2: #f1ece6;
+  --fondo-input: #f6f3ef;
+  --papel: #f8f6f2;
   --blanco: #ffffff;
 
   /* Formas */
   --r-xs: 8px;
   --r-sm: 10px;
   --r-md: 14px;
-  --r-lg: 20px;
+  --r-lg: 18px;
   --pill: 999px;
 
-  /* Sombras */
-  --sombra-1: 0 1px 2px rgba(22, 24, 29, 0.06);
-  --sombra-2: 0 4px 16px rgba(22, 24, 29, 0.08);
-  --sombra-3: 0 18px 44px rgba(45, 8, 10, 0.22);
+  /* Sombras suaves en capas */
+  --sombra-1: 0 1px 2px rgba(28, 23, 20, 0.05);
+  --sombra-2: 0 1px 2px rgba(28, 23, 20, 0.04), 0 14px 34px -16px rgba(28, 23, 20, 0.16);
+  --sombra-3: 0 32px 64px -24px rgba(42, 8, 14, 0.38);
 
-  /* Tipografía */
-  --fuente: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  /* Tipografía: interfaz + títulos editoriales */
+  --fuente: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --fuente-display: 'Fraunces', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
 
   --sidebar-w: 258px;
   --topbar-h: 64px;

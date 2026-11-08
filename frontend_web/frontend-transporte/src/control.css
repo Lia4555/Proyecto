@@ -1,0 +1,171 @@
+/* ============================================================
+   Centro de control, evaluaciones y página pública de evaluación
+   Usa los mismos tokens de color y forma que index.css.
+   ============================================================ */
+
+/* ---- Tarjetas de indicadores ---------------------------------- */
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.kpi {
+  background: var(--blanco);
+  border: 1px solid var(--linea);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+  box-shadow: var(--sombra-1);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  border-top: 3px solid var(--linea);
+}
+.kpi-label { font-size: 0.78rem; color: var(--muted); font-weight: 600; }
+.kpi-valor { font-size: 1.7rem; font-weight: 800; color: var(--tinta); line-height: 1.1; font-variant-numeric: tabular-nums; }
+.kpi-nota { font-size: 0.76rem; color: var(--muted); }
+.kpi.rojo { border-top-color: var(--error); }
+.kpi.rojo .kpi-valor { color: var(--error); }
+.kpi.ambar { border-top-color: var(--ambar); }
+.kpi.ambar .kpi-valor { color: var(--ambar); }
+.kpi.verde { border-top-color: var(--verde); }
+.kpi.neutro { border-top-color: var(--vino); }
+
+/* ---- Semáforo de vencimientos --------------------------------- */
+.semaforo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: var(--pill);
+  font-size: 0.76rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.semaforo::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.semaforo.vencido { background: var(--rojo-suave); color: var(--error); }
+.semaforo.critico { background: #fde8e0; color: #b4380a; }
+.semaforo.pronto { background: var(--ambar-suave); color: var(--ambar); }
+.semaforo.aviso { background: #e7effc; color: #1d4ed8; }
+
+.tipo-venc {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+.celda-principal { display: flex; flex-direction: column; gap: 2px; }
+.celda-principal strong { color: var(--tinta); font-weight: 600; }
+
+/* ---- Barra de estado de la automatización -------------------- */
+.auto-estado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 18px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--linea-2);
+  font-size: 0.84rem;
+  color: var(--muted);
+}
+.auto-estado strong { color: var(--tinta); }
+.punto-vivo { width: 9px; height: 9px; border-radius: 50%; background: var(--verde); box-shadow: 0 0 0 4px var(--verde-suave); }
+.punto-vivo.apagado { background: var(--muted-2); box-shadow: 0 0 0 4px var(--fondo-input); }
+.punto-vivo.falla { background: var(--error); box-shadow: 0 0 0 4px var(--rojo-suave); }
+
+.lista-reglas {
+  margin: 0;
+  padding: 14px 16px 16px 34px;
+  display: grid;
+  gap: 6px;
+  font-size: 0.86rem;
+  color: var(--texto);
+}
+
+/* ---- Estrellas ----------------------------------------------- */
+.estrellas { display: inline-flex; gap: 2px; color: #f5a524; font-size: 0.95rem; letter-spacing: 1px; white-space: nowrap; }
+.estrellas .apagada { color: #e4dccf; }
+
+.selector-estrellas { display: flex; gap: 6px; }
+.selector-estrellas button {
+  border: none;
+  background: none;
+  padding: 2px;
+  font-size: 2.1rem;
+  line-height: 1;
+  cursor: pointer;
+  color: #e4dccf;
+  transition: transform 0.1s ease, color 0.1s ease;
+}
+.selector-estrellas.chico button { font-size: 1.5rem; }
+.selector-estrellas button.encendida { color: #f5a524; }
+.selector-estrellas button:hover { transform: scale(1.12); }
+.selector-estrellas button:focus-visible { outline: 2px solid var(--rojo); outline-offset: 2px; border-radius: 6px; }
+
+/* ---- Distribución y ranking ---------------------------------- */
+.eval-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+@media (max-width: 860px) { .eval-grid { grid-template-columns: minmax(0, 1fr); } }
+.card-titulo { font-size: 0.95rem; font-weight: 700; color: var(--tinta); padding: 14px 16px 0; margin: 0; }
+.barras { display: grid; gap: 8px; padding: 14px 16px 16px; }
+.barra-fila { display: grid; grid-template-columns: 34px 1fr 36px; align-items: center; gap: 10px; font-size: 0.82rem; }
+.barra-pista { height: 10px; border-radius: var(--pill); background: var(--fondo-input); overflow: hidden; }
+.barra-relleno { height: 100%; border-radius: var(--pill); background: #f5a524; }
+.barra-num { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+.ranking { list-style: none; margin: 0; padding: 8px 16px 14px; display: grid; gap: 2px; }
+.ranking li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--linea-2); font-size: 0.86rem; }
+.ranking li:last-child { border-bottom: none; }
+.ranking small { color: var(--muted); }
+.comentario-celda { max-width: 340px; white-space: normal; color: var(--texto); font-size: 0.84rem; }
+
+/* ---- Página pública de evaluación ---------------------------- */
+.evaluar-screen {
+  min-height: 100vh;
+  background: linear-gradient(160deg, var(--vino-3), var(--vino) 55%, var(--rojo));
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 16px;
+}
+.evaluar-card {
+  width: 100%;
+  max-width: 560px;
+  background: var(--blanco);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sombra-3);
+  padding: 28px;
+}
+@media (max-width: 520px) { .evaluar-card { padding: 20px; } }
+.evaluar-marca { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+.evaluar-titulo { font-size: 1.35rem; font-weight: 800; color: var(--tinta); margin: 0 0 4px; }
+.evaluar-sub { color: var(--muted); font-size: 0.9rem; margin: 0 0 18px; }
+.viaje-resumen {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 16px;
+  background: var(--papel);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  font-size: 0.86rem;
+}
+.viaje-resumen dt { color: var(--muted); font-size: 0.74rem; font-weight: 600; }
+.viaje-resumen dd { margin: 2px 0 0; color: var(--tinta); font-weight: 600; overflow-wrap: anywhere; }
+.viaje-resumen .ancho { grid-column: 1 / -1; }
+.criterios { display: grid; gap: 12px; margin: 6px 0 16px; }
+.criterio { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: 0.88rem; color: var(--texto); }
+.si-no { display: flex; gap: 8px; }
+.evaluar-final { text-align: center; padding: 18px 0 6px; }
+.evaluar-final .icono-grande { color: var(--verde); margin-bottom: 8px; }
+.evaluar-form { display: grid; gap: 16px; }
+.contador { text-align: right; font-size: 0.74rem; color: var(--muted); }
+
+/* ---- Enlace copiable ------------------------------------------ */
+.copiar-enlace { display: inline-flex; gap: 6px; align-items: center; }

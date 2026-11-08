@@ -32,7 +32,7 @@ export default function MisAlertas({ datos, cargando }) {
         <div>
           <h1 className="cond-titulo" id="titulo-alertas">Mis alertas</h1>
           <p className="cond-sub">
-            Avisos que el administrador dirigió a ti. Son de solo lectura.
+            Avisos del sistema (documentos por vencer, recordatorios de servicio) y del administrador. Son de solo lectura.
           </p>
         </div>
         <p className="cond-conteo" aria-live="polite">
