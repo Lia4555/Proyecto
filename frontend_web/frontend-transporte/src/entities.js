@@ -282,8 +282,8 @@ export const entities = [
       { name: 'distancia_estimada_km', label: 'Distancia estimada (km)', type: 'number', min: 0, soloEdicion: true },
       { name: 'peajes_estimados', label: 'Peajes estimados', type: 'number', min: 0 },
       { name: 'observaciones', label: 'Observaciones', type: 'textarea' },
-      { name: 'id_conductor', label: 'Conductor', type: 'text', required: true, format: 'uuid', ref: 'conductor' },
-      { name: 'id_vehiculo', label: 'Vehículo', type: 'number', required: true, integer: true, min: 1, ref: 'vehiculos' },
+      { name: 'id_conductor', label: 'Conductor', type: 'text', format: 'uuid', ref: 'conductor', hint: 'Déjalo vacío y el sistema asigna un conductor disponible, con licencia vigente y sin cruces de horario.' },
+      { name: 'id_vehiculo', label: 'Vehículo', type: 'number', integer: true, min: 1, ref: 'vehiculos', hint: 'Déjalo vacío y el sistema elige un vehículo con cupo, operativo y con documentos al día.' },
       { name: 'id_estado', label: 'Estado del servicio', type: 'number', required: true, integer: true, min: 1, ref: 'estados-servicio' }
     ]
   },
@@ -295,11 +295,12 @@ export const entities = [
     pk: 'id_alerta',
     group: 'Operación',
     mostrar: ['descripcion'],
-    columnas: ['descripcion', 'id_tipo_alerta', 'prioridad', 'fecha_limite', 'id_usuario_destino'],
+    columnas: ['descripcion', 'id_tipo_alerta', 'prioridad', 'fecha_limite', 'id_usuario_destino', 'estado_resuelta'],
     fields: [
       { name: 'descripcion', label: 'Descripción', type: 'textarea', required: true },
       { name: 'id_tipo_alerta', label: 'Tipo de alerta', type: 'number', required: true, integer: true, min: 1, ref: 'tipos-alerta' },
-      { name: 'id_usuario_destino', label: 'Dirigida a (conductor)', type: 'text', required: true, format: 'uuid', ref: 'conductor' },
+      { name: 'id_usuario_destino', label: 'Dirigida a (conductor)', type: 'text', format: 'uuid', ref: 'conductor', hint: 'Vacío = solo la ve el administrador.' },
+      { name: 'estado_resuelta', label: 'Resuelta', type: 'checkbox', soloEdicion: true },
       { name: 'fecha_limite', label: 'Fecha límite', type: 'date' },
       { name: 'prioridad', label: 'Prioridad', type: 'number', integer: true, min: 1 },
       { name: 'id_vehiculo_relacionado', label: 'Vehículo relacionado', type: 'number', integer: true, min: 1, ref: 'vehiculos' },

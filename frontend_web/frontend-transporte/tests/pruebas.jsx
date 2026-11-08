@@ -225,7 +225,9 @@ chequear('tamaño de página respetado', paginacion(2, 137, 50).resumen, 'Mostra
 console.log('\n· Validación de formularios')
 
 const vacios = buildInitialValues(servicios.fields, null)
-chequear('detecta todos los obligatorios', Object.keys(validateValues(servicios.fields, vacios)).length, 9)
+// Conductor y vehículo no son obligatorios: si llegan vacíos el servidor los asigna solo.
+chequear('detecta todos los obligatorios', Object.keys(validateValues(servicios.fields, vacios)).length, 7)
+chequear('conductor y vehículo se pueden dejar para la asignación automática', ['id_conductor', 'id_vehiculo'].some((c) => c in validateValues(servicios.fields, vacios)), false)
 chequear('el código de servicio no se pide: lo genera el servidor', 'codigo_servicio' in validateValues(servicios.fields, vacios), false)
 chequear(
   'UUID mal escrito',
