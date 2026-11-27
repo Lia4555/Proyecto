@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { groups, entidadesVisibles } from '../entities.js'
 import { nombreVisible, puedeEscribir as tienePermisoDeEscritura } from '../lib/session.js'
+import CentroControl from './CentroControl.jsx'
 import Cuentas from './Cuentas.jsx'
+import Evaluaciones from './Evaluaciones.jsx'
 import DataTable from './DataTable.jsx'
 import ReporteSemanal from './ReporteSemanal.jsx'
 import BotonAvatar from './perfil/BotonAvatar.jsx'
@@ -17,12 +19,25 @@ export const SECCION_CUENTAS = {
   group: 'Personas'
 }
 
+// Secciones del grupo «Control»: van primero y el administrador entra al
+// Centro de control (vencimientos y alertas automáticas).
+const SECCIONES_CONTROL = [
+  { key: 'centro-control', label: 'Centro de control', group: 'Control' },
+  { key: 'evaluaciones', label: 'Evaluaciones', group: 'Control' }
+]
+const GRUPOS = ['Control', ...groups]
+const PROPIAS = {
+  'centro-control': CentroControl,
+  evaluaciones: Evaluaciones,
+  [SECCION_CUENTAS.key]: Cuentas
+}
+
 // Orden en el que se recorren las secciones con las flechas «Anterior / Siguiente»:
 // el mismo que se ve en el menú lateral.
-const ORDEN = groups.flatMap((grupo) => [
+const ORDEN = [...SECCIONES_CONTROL, ...groups.flatMap((grupo) => [
   ...(grupo === SECCION_CUENTAS.group ? [SECCION_CUENTAS] : []),
   ...entidadesVisibles.filter((e) => e.group === grupo)
-])
+])]
 const CLAVES = ORDEN.map((e) => e.key)
 
 // App.jsx usa esta lista para saber qué rutas existen para el administrador.
@@ -57,7 +72,7 @@ export default function Dashboard({ usuario, nav, onLogout }) {
 
   const gruposFiltrados = useMemo(() => {
     const termino = filtro.trim().toLowerCase()
-    return groups
+    return GRUPOS
       .map((grupo) => ({
         grupo,
         items: ORDEN.filter(
@@ -181,8 +196,11 @@ export default function Dashboard({ usuario, nav, onLogout }) {
         </header>
 
         <main className="content" id="contenido">
-          {entidadActiva.key === SECCION_CUENTAS.key ? (
-            <Cuentas />
+          {PROPIAS[entidadActiva.key] ? (
+            (() => {
+              const Seccion = PROPIAS[entidadActiva.key]
+              return <Seccion key={entidadActiva.key} />
+            })()
           ) : (
             <DataTable
               key={entidadActiva.key}

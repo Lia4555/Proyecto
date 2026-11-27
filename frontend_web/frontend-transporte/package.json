@@ -7,8 +7,14 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vite build --config vite.test.config.js --logLevel error && node tests/run.mjs",
-    "demo": "vite --open /demo.html"
+    "test": "jest",
+    "test:node": "vite build --config vite.test.config.js --logLevel error && node tests/run.mjs",
+    "dev:e2e": "vite --mode e2e --host 127.0.0.1 --port 5174",
+    "cy:open": "start-server-and-test dev:e2e http://127.0.0.1:5174 \"cypress open\"",
+    "cy:system": "cypress run --spec \"cypress/e2e/system/**/*.cy.js\"",
+    "cy:run:system": "start-server-and-test dev:e2e http://127.0.0.1:5174 cy:system",
+    "demo": "vite --open /demo.html",
+    "test:cobertura": "jest --coverage"
   },
   "dependencies": {
     "axios": "^1.7.2",
@@ -16,7 +22,20 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.29.13",
+    "@babel/preset-env": "^7.29.14",
+    "@babel/preset-react": "^7.29.7",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.3",
     "@vitejs/plugin-react": "^4.3.1",
+    "babel-jest": "^29.7.0",
+    "babel-plugin-transform-vite-meta-env": "^1.0.3",
+    "cypress": "^16.3.0",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "start-server-and-test": "^3.0.13",
     "vite": "^5.3.1"
   }
 }
