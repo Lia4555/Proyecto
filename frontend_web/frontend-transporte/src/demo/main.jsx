@@ -13,6 +13,7 @@ import { ToastProvider } from '../components/ui/Toast.jsx'
 import { MASCARA } from '../lib/validaciones.js'
 import { almacen, siguienteId } from './datos.js'
 import '../index.css'
+import '../tema.css'
 
 const espera = (ms) => new Promise((r) => setTimeout(r, ms))
 
@@ -75,6 +76,89 @@ const claveValida = (v) => typeof v === 'string' && v.length >= 8 && v.length <=
 // Aquí se imita con una variable: mientras valga null, /auth/me responde 401
 // y la aplicación enseña la portada pública.
 let sesionDemo = null
+
+// demo.html?sesion=admin entra directo al panel (útil para presentar).
+const ADMIN_DEMO = {
+  id_usuario: 'demo',
+  nombre: 'Administrador de prueba',
+  correo: 'admin@dviaje.com',
+  id_rol: 1,
+  rol: 'Administrador',
+  nivel_permiso: 3,
+  id_conductor: null
+}
+if (new URLSearchParams(window.location.search).get('sesion') === 'admin') sesionDemo = ADMIN_DEMO
+
+// ---- Automatización y evaluaciones simuladas
+const enDias = (d) => {
+  const f = new Date()
+  f.setDate(f.getDate() + d)
+  return f.toISOString().slice(0, 10)
+}
+const semaforo = (d) => (d < 0 ? 'vencido' : d <= 7 ? 'critico' : d <= 15 ? 'pronto' : 'aviso')
+const vencimientosDemo = [
+  ['documento', 'SOAT · 7845120', 'Vehículo WPK-482', -3],
+  ['licencia', 'Licencia de conducción C2', 'Carlos Ramírez', 2],
+  ['documento', 'Revisión técnico-mecánica', 'Vehículo TSL-219', 5],
+  ['mantenimiento', 'Mantenimiento programado', 'Vehículo WPK-482', 6],
+  ['documento', 'Póliza contractual · RC-55821', 'Vehículo JHN-730', 12],
+  ['documento', 'Tarjeta de operación', 'Vehículo TSL-219', 24]
+].map(([tipo, titulo, referencia, dias], i) => ({
+  tipo, id: i + 1, titulo, referencia, fecha: enDias(dias), dias, estado: semaforo(dias)
+}))
+
+const evaluacionesDemo = [
+  ['SVC-0041', 'Bogotá → Villa de Leyva', 'Carlos Ramírez', 5, 5, 5, 4, true, 'Puntual, muy amable y el vehículo impecable.'],
+  ['SVC-0039', 'Terminal Salitre → Tunja', 'Andrés Gómez', 4, 4, 5, 4, true, 'Buen viaje, solo un pequeño retraso en la salida.'],
+  ['SVC-0037', 'Aeropuerto El Dorado → Chía', 'Diana Torres', 5, 5, 5, 5, true, 'Excelente servicio ejecutivo.'],
+  ['SVC-0035', 'Bogotá → Girardot', 'Andrés Gómez', 2, 1, 3, 3, false, 'Llegó 40 minutos tarde a recogernos.'],
+  ['SVC-0042', 'Bogotá → Zipaquirá', 'Diana Torres', null],
+  ['SVC-0043', 'Chía → Bogotá', 'Carlos Ramírez', null]
+].map(([codigo, ruta, conductor, cal, pun, trato, veh, rec, com], i) => ({
+  id_evaluacion: i + 1,
+  id_servicio: 40 + i,
+  codigo_servicio: codigo,
+  ruta,
+  conductor,
+  id_conductor: conductor,
+  fecha_salida: `${enDias(-(i + 1) * 2)}T13:00:00Z`,
+  estado: cal ? 'respondida' : 'pendiente',
+  calificacion: cal,
+  puntualidad: pun ?? null,
+  trato_conductor: trato ?? null,
+  estado_vehiculo: veh ?? null,
+  recomendaria: rec ?? null,
+  comentario: com ?? null,
+  respondida_en: cal ? `${enDias(-(i + 1))}T18:00:00Z` : null,
+  enlace: cal ? null : `${window.location.origin}/?evaluar=demo${i}`
+}))
+
+function resumenEvaluacionesDemo() {
+  const r = evaluacionesDemo.filter((e) => e.calificacion)
+  const prom = (k) => Math.round((r.reduce((a, e) => a + e[k], 0) / r.length) * 100) / 100
+  const porConductor = {}
+  for (const e of r) (porConductor[e.conductor] ||= []).push(e.calificacion)
+  return {
+    enviadas: evaluacionesDemo.length,
+    respondidas: r.length,
+    tasaRespuesta: Math.round((r.length / evaluacionesDemo.length) * 100),
+    promedio: prom('calificacion'),
+    puntualidad: prom('puntualidad'),
+    trato_conductor: prom('trato_conductor'),
+    estado_vehiculo: prom('estado_vehiculo'),
+    recomendarian: Math.round((r.filter((e) => e.recomendaria).length / r.length) * 100),
+    distribucion: [1, 2, 3, 4, 5].map((n) => r.filter((e) => e.calificacion === n).length),
+    porConductor: Object.entries(porConductor)
+      .map(([c, n]) => ({ id_conductor: c, conductor: c, cantidad: n.length, promedio: n.reduce((a, b) => a + b, 0) / n.length }))
+      .sort((a, b) => b.promedio - a.promedio)
+  }
+}
+
+const ultimaRevisionDemo = () => ({
+  ok: true,
+  fin: new Date(Date.now() - 12 * 60000).toISOString(),
+  resultado: { alertasCreadas: 3, alertasCerradas: 1 }
+})
 
 // Solicitudes de cuenta de la demo: una pendiente para poder probar «Aprobar».
 const cuentasDemo = [
@@ -204,6 +288,59 @@ api.defaults.adapter = async (config) => {
       success: true,
       message: accion === 'aprobar' ? 'Cuenta aprobada.' : 'Cuenta desactivada.'
     })
+  }
+
+  if (recurso === 'automatizacion') {
+    if (id === 'ejecutar') {
+      return responder(config, 200, {
+        success: true,
+        resultado: { alertasCreadas: 2, alertasCerradas: 1, documentosMarcadosVencidos: 1, serviciosFinalizados: 0, enlacesEvaluacionCreados: 1 }
+      })
+    }
+    return responder(config, 200, {
+      automatizacion: {
+        activa: true,
+        intervaloMin: 60,
+        enEjecucion: false,
+        ultimaEjecucion: ultimaRevisionDemo(),
+        proximaEjecucion: new Date(Date.now() + 48 * 60000).toISOString()
+      },
+      conteos: {
+        vencidos: vencimientosDemo.filter((v) => v.estado === 'vencido').length,
+        documentosVencidos: vencimientosDemo.filter((v) => v.tipo === 'documento' && v.estado === 'vencido').length,
+        licenciasVencidas: vencimientosDemo.filter((v) => v.tipo === 'licencia' && v.estado === 'vencido').length,
+        mantenimientosAtrasados: vencimientosDemo.filter((v) => v.tipo === 'mantenimiento' && v.estado === 'vencido').length,
+        porVencer: vencimientosDemo.filter((v) => v.estado !== 'vencido').length,
+        criticos: vencimientosDemo.filter((v) => v.estado === 'critico').length,
+        proximos: vencimientosDemo.filter((v) => v.estado === 'pronto' || v.estado === 'aviso').length,
+        alertasAbiertas: 7,
+        alertasUrgentes: 3
+      },
+      vencimientos: vencimientosDemo
+    })
+  }
+
+  if (recurso === 'evaluaciones' && id === 'publica') {
+    if (metodo === 'post') {
+      return responder(config, 201, { success: true, message: '¡Gracias! Tu opinión nos ayuda a mejorar el servicio.' })
+    }
+    return responder(config, 200, {
+      servicio: {
+        codigo_servicio: 'SVC-0042',
+        origen: 'Aeropuerto El Dorado',
+        destino: 'Hotel Casa Medina, Bogotá',
+        fecha_salida: `${enDias(-1)}T14:30:00Z`,
+        conductor: 'Diana T.',
+        vehiculo: 'Mercedes-Benz Sprinter · WPK-482'
+      },
+      respondida: false,
+      vencida: false,
+      respuesta: null
+    })
+  }
+
+  if (recurso === 'evaluaciones') {
+    return responder(config, 200, { resumen: resumenEvaluacionesDemo(), evaluaciones: evaluacionesDemo })
   }
 
   const registro = almacen.get(recurso)

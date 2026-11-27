@@ -15,6 +15,7 @@ import Registro from './components/Registro.jsx'
 import Dashboard, { SECCIONES_ADMIN } from './components/Dashboard.jsx'
 import PanelConductor, { SECCIONES_CONDUCTOR } from './components/conductor/PanelConductor.jsx'
 import { useToast } from './components/ui/Toast.jsx'
+import EvaluarServicio from './components/EvaluarServicio.jsx'
 import './navegacion.css'
 
 // Las dos pantallas públicas. INICIO es la página principal y, además, el
@@ -24,7 +25,23 @@ export const INICIO = 'inicio'
 export const ENTRAR = 'entrar'
 export const REGISTRO = 'registro'
 
+// Enlace que recibe el cliente para calificar su viaje: ?evaluar=<token>.
+// Es una página pública: no consulta la sesión ni monta el panel.
+const tokenEvaluacion = () => {
+  try {
+    return new URLSearchParams(window.location.search).get('evaluar')
+  } catch {
+    return null
+  }
+}
+
 export default function App() {
+  const token = tokenEvaluacion()
+  if (token) return <EvaluarServicio token={token} />
+  return <AppConSesion />
+}
+
+function AppConSesion() {
   // undefined = todavía preguntando al servidor · null = sin sesión
   const [usuario, setUsuario] = useState(undefined)
   const toast = useToast()

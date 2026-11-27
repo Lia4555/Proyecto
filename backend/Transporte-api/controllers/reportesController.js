@@ -28,8 +28,13 @@ const hoyEnBogota = () => new Date(Date.now() + DESFASE_MS).toISOString().slice(
 const diasEntre = (a, b) =>
   Math.round((new Date(`${b}T00:00:00Z`) - new Date(`${a}T00:00:00Z`)) / 86400000);
 
-const fechaValida = (fecha) =>
-  RE_FECHA.test(fecha) && new Date(`${fecha}T00:00:00Z`).toISOString().slice(0, 10) === fecha;
+// Un mes 13 o un dia 32 dan una fecha invalida: toISOString() lanzaria
+// un error (y la API responderia 500 en vez de 400), por eso se mira antes.
+const fechaValida = (fecha) => {
+  if (!RE_FECHA.test(fecha)) return false;
+  const d = new Date(`${fecha}T00:00:00Z`);
+  return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === fecha;
+};
 
 // Excel no guarda zona horaria: se le entrega la hora "de reloj" de Bogota
 const horaLocal = (iso) => {

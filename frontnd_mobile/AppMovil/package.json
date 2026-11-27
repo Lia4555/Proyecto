@@ -20,7 +20,13 @@
     "react-native-web": "^0.21.2"
   },
   "devDependencies": {
+    "@babel/core": "^7.29.13",
+    "@babel/preset-env": "^7.29.14",
+    "@babel/preset-typescript": "^7.29.7",
+    "@types/jest": "^29.5.14",
     "@types/react": "~19.2.2",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0",
     "typescript": "~6.0.3"
   },
   "scripts": {
@@ -30,7 +36,9 @@
     "prebuild": "expo prebuild --platform android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "tipos": "tsc --noEmit"
+    "tipos": "tsc --noEmit",
+    "test": "jest",
+    "test:cobertura": "jest --coverage"
   },
   "private": true
 }
